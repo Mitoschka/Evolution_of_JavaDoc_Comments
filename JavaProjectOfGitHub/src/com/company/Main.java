@@ -19,10 +19,8 @@ public class Main {
                 newString = newString + "/commits";
                 Connect server = new Connect();
                 server.Connect(newString, link);
-                System.out.print("\nDownload complete");
                 return;
-            } catch (IOException var5) {
-                System.out.flush();
+            } catch (IOException e) {
                 System.out.println("\nOops, there was an error, maybe you entered the wrong link, try again");
                 System.out.print("Input URL of GitHub: ");
                 link = in.nextLine();

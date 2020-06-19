@@ -15,6 +15,7 @@ public class Download implements Runnable {
 
     private String link;
     private File out;
+    private static int i = 0;
 
     protected Download(String link, File out) {
         this.link = link;
@@ -24,11 +25,20 @@ public class Download implements Runnable {
     public void run() {
 
         try {
+
             URL url = new URL(this.link);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            double fileSize = (double)http.getContentLengthLong();
             BufferedInputStream in = new BufferedInputStream(http.getInputStream());
             FileOutputStream fos = new FileOutputStream(this.out);
             BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);
+            byte[] buffer = new byte[1024];
+            int read = 0;
+            while ((read = in.read(buffer, 0, 1024)) >= 0) {
+                bout.write(buffer, 0, read);
+            }
+            i++;
+            System.out.printf("\nDownload %d file complete", i);
             bout.close();
             in.close();
         } catch (MalformedURLException | IIOException e) {
@@ -38,6 +48,5 @@ public class Download implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }

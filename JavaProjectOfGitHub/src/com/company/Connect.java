@@ -37,6 +37,5 @@ public class Connect {
             File out = new File("C:\\" + FolderCreate.folderName + "\\Project" + i + ".zip");
             (new Thread(new Download(links, out))).start();
         }
-
     }
 }
