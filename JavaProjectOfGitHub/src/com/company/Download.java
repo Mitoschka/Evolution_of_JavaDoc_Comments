@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.IIOException;
+import java.lang.String;
 
 public class Download implements Runnable {
 
@@ -25,10 +26,8 @@ public class Download implements Runnable {
     public void run() {
 
         try {
-
             URL url = new URL(this.link);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
-            double fileSize = (double)http.getContentLengthLong();
             BufferedInputStream in = new BufferedInputStream(http.getInputStream());
             FileOutputStream fos = new FileOutputStream(this.out);
             BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);

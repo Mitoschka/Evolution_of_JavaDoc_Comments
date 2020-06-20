@@ -24,7 +24,6 @@ public class Connect {
 
         bufferedReader.close();
         int i = 0;
-        new FolderCreate();
         Arrays.stream(line.split("\"sha\":\"")).skip(1L).map((L) -> {
             return L.split("\"")[0];
         }).forEach((L) -> {
@@ -33,8 +32,8 @@ public class Connect {
 
         while (i != arrlist.size()) {
             String links = link + "/archive/" + (String) arrlist.get(i) + ".zip";
+            File out = new File("C:\\" + FolderCreate.folderName + "\\" + arrlist.get(i) + ".zip");
             ++i;
-            File out = new File("C:\\" + FolderCreate.folderName + "\\Project" + i + ".zip");
             (new Thread(new Download(links, out))).start();
         }
     }
