@@ -6,10 +6,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.IIOException;
+import javax.net.ssl.SSLException;
 import java.lang.String;
 
 public class Download implements Runnable {
@@ -42,10 +44,13 @@ public class Download implements Runnable {
             in.close();
         } catch (MalformedURLException | IIOException e) {
             e.printStackTrace();
+        } catch (SSLException e) {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (ConnectException e) {
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (IllegalMonitorStateException e) {
         }
     }
 }

@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 public class FolderCreate {
 
     protected static String folderName;
+    protected static File folder;
     private static int count = 2;
 
     protected FolderCreate() {
@@ -19,7 +20,7 @@ public class FolderCreate {
             path = Paths.get("C:\\" + folderName);
         }
 
-        File folder = new File("C:\\" + folderName);
+        folder = new File("C:\\" + folderName);
         folder.mkdir();
     }
 
