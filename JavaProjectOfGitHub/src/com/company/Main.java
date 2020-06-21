@@ -38,7 +38,7 @@ public class Main {
                 String exception = "Server returned HTTP response code: 403 for URL:";
                 if (e.getMessage().contains(exception)) {
                     if (!isOkay) {
-                        System.out.print("\n\nSorry, request limit exceeded, try again later.");
+                        System.out.print("\n\nSorry, request limit exceeded, try again later or use a VPN");
                         FolderCreate.folder.delete();
                     } else {
                         System.out.print("\n\nAll file download complete.");
