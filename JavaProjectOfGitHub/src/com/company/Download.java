@@ -1,18 +1,12 @@
 package com.company;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.imageio.IIOException;
+import javax.net.ssl.SSLException;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.imageio.IIOException;
-import javax.net.ssl.SSLException;
-import java.lang.String;
 
 public class Download implements Runnable {
 
@@ -39,9 +33,11 @@ public class Download implements Runnable {
                 bout.write(buffer, 0, read);
             }
             i++;
-            System.out.printf("\nDownload %d file complete", i);
+            System.out.println("Download " + i + " file complete" + "\n");
             bout.close();
             in.close();
+            ZipInputStream unZipFile = new ZipInputStream();
+            unZipFile.UnZip(out);
         } catch (MalformedURLException | IIOException e) {
             e.printStackTrace();
         } catch (SSLException e) {

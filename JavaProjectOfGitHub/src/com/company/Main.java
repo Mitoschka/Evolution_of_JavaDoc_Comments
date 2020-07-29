@@ -13,7 +13,7 @@ public class Main {
 
         Scanner in = new Scanner(System.in);
         System.out.print("Input URL of GitHub: ");
-        String link = in.nextLine();
+        String link = args[0];
         System.out.print("Please, wait... ");
         boolean isOkay = false;
         new FolderCreate();
@@ -54,5 +54,3 @@ public class Main {
         }
     }
 }
-
-
