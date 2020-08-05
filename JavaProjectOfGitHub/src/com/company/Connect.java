@@ -12,6 +12,8 @@ import java.util.List;
 
 public class Connect {
 
+    public static Thread current;
+
     protected void Connect(String newString, String link) throws Exception, ConnectException {
 
         List<String> arrlist = new ArrayList();
@@ -37,7 +39,8 @@ public class Connect {
             File out = new File("C:\\" + FolderCreate.folderName + "\\" + arrlist.get(i) + ".zip");
             out.deleteOnExit();
             ++i;
-            (new Thread(new Download(links, out))).start();
+            current = new Thread(new Download(links, out));
+            current.start();
         }
     }
 }

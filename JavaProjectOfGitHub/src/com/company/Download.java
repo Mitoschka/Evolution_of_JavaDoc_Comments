@@ -1,17 +1,15 @@
 package com.company;
 
-import javax.imageio.IIOException;
 import javax.net.ssl.SSLException;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class Download implements Runnable {
 
-    private String link;
-    private File out;
+    private final String link;
+    private final File out;
     private static int i = 0;
 
     protected Download(String link, File out) {
@@ -28,7 +26,7 @@ public class Download implements Runnable {
             FileOutputStream fos = new FileOutputStream(this.out);
             BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);
             byte[] buffer = new byte[1024];
-            int read = 0;
+            int read;
             while ((read = in.read(buffer, 0, 1024)) >= 0) {
                 bout.write(buffer, 0, read);
             }
@@ -36,17 +34,10 @@ public class Download implements Runnable {
             System.out.println("Download " + i + " file complete" + "\n");
             bout.close();
             in.close();
-            ZipInputStream unZipFile = new ZipInputStream();
-            unZipFile.UnZip(out);
-        } catch (MalformedURLException | IIOException e) {
-            e.printStackTrace();
-        } catch (SSLException e) {
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (ConnectException e) {
+            UnZip.UnZip(out);
+        } catch (SSLException | ConnectException | IllegalMonitorStateException ignored) {
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (IllegalMonitorStateException e) {
         }
     }
 }

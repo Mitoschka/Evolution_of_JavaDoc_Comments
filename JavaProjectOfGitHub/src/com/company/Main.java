@@ -4,12 +4,15 @@ import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.Scanner;
+
+import static java.lang.System.out;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, URISyntaxException, Exception {
+    public static Boolean isJsonFileCreated = false;
+
+    public static void main(String[] args) throws Exception {
 
         Scanner in = new Scanner(System.in);
         System.out.print("Input URL of GitHub: ");
@@ -41,7 +44,25 @@ public class Main {
                         System.out.print("\n\nSorry, request limit exceeded, try again later or use a VPN");
                         FolderCreate.folder.delete();
                     } else {
-                        System.out.print("\n\nAll file download complete.");
+                        System.out.print("\n\nAll file download complete." + "\n");
+                        int i = 0;
+                        if (!isJsonFileCreated)
+                        {
+                            FolderCreate.isCreated = true;
+                            new FolderCreate();
+                            isJsonFileCreated = true;
+                        }
+                        Thread.sleep(30000);
+                        out.println("Let's the magic begins...");
+                        while (i != UnZip.arraylist.size()) {
+                            MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
+                            mainOfAnalyze.mainOfAnalyze(UnZip.arraylist.get(i));
+                            i++;
+                        }
+                        Thread.sleep(10000);
+                        Connect.current.interrupt();
+                        FolderCreate.file.deleteOnExit();
+                        FolderCreate.isCreated = false;
                     }
                     return;
                 } else {
