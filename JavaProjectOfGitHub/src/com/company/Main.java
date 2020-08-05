@@ -46,22 +46,25 @@ public class Main {
                     } else {
                         System.out.print("\n\nAll file download complete." + "\n");
                         int i = 0;
-                        if (!isJsonFileCreated)
-                        {
+                        if (!isJsonFileCreated) {
                             FolderCreate.isCreated = true;
                             new FolderCreate();
                             isJsonFileCreated = true;
                         }
-                        Thread.sleep(30000);
-                        out.println("Let's the magic begins...");
+                        System.out.println("\nLet's the magic begins...");
+                        long start = System.currentTimeMillis();
                         while (i != UnZip.arraylist.size()) {
                             MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
                             mainOfAnalyze.mainOfAnalyze(UnZip.arraylist.get(i));
                             i++;
                         }
-                        Thread.sleep(10000);
-                        Connect.current.interrupt();
-                        FolderCreate.file.deleteOnExit();
+                        long end = System.currentTimeMillis();
+                        out.println("Finished parsing " + (end - start) / 1000);
+                        Thread.sleep(2000);
+                        while (FolderCreate.file.exists()) {
+                            DeleteDirectory.DeleteDirectory();
+                            FolderCreate.file.delete();
+                        }
                         FolderCreate.isCreated = false;
                     }
                     return;

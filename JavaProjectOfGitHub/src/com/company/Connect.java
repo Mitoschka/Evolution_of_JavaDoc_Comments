@@ -14,6 +14,9 @@ public class Connect {
 
     public static Thread current;
 
+    public static List<String> arraylistOfCommits = new ArrayList();
+    public static List<String> arraylistOfDate = new ArrayList();
+
     protected void Connect(String newString, String link) throws Exception, ConnectException {
 
         List<String> arrlist = new ArrayList();
@@ -31,7 +34,13 @@ public class Connect {
             return L.split("\"")[0];
         }).forEach((L) -> {
             arrlist.add(L);
+            if (!arraylistOfCommits.contains(L)) {
+                arraylistOfCommits.add(L);
+            }
         });
+        Arrays.stream(line.split("\"date\":\"")).skip(1L).map((G) -> {
+            return G.split("\"")[0];
+        }).forEach(arraylistOfDate::add);
 
 
         while (i != arrlist.size()) {
@@ -41,6 +50,14 @@ public class Connect {
             ++i;
             current = new Thread(new Download(links, out));
             current.start();
+            while (!current.isInterrupted()) {
+                try {
+                    Thread.sleep(250);
+                    Connect.current.interrupt();
+                } catch (InterruptedException exception1) {
+                    exception1.printStackTrace();
+                }
+            }
         }
     }
 }

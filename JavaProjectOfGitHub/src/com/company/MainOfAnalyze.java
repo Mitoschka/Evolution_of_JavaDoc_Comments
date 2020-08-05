@@ -20,7 +20,9 @@ import static java.lang.System.out;
 public class MainOfAnalyze {
     public static int MinCommentSize = 10;
 
-    public static ArrayList<JavaDocSegment> DocSegments=new ArrayList<>();
+    public static ArrayList<JavaDocSegment> DocSegments = new ArrayList<>();
+
+    public static int count = 0;
 
 
     static final Pattern JavaDocPattern = Pattern.compile("(?s)package\\s*(.*?);|(/\\*\\*(?s:(?!\\*/).)*\\*/)(.*?)[;\\{]");
@@ -28,9 +30,9 @@ public class MainOfAnalyze {
 
     public static void PrintDocsReport(ArrayList<JavaDocSegment> comments, String args) {
         Gson json = new Gson();
-        comments.forEach(segment->{
+        comments.forEach(segment -> {
             comments.add(segment);
-            try (PrintWriter outJson = new PrintWriter( FolderCreate.folder + args +".json")) {
+            try (PrintWriter outJson = new PrintWriter(FolderCreate.folder + args + ".json")) {
                 String response = json.toJson(comments);
                 outJson.println(response);
             } catch (Exception e) {
@@ -41,32 +43,30 @@ public class MainOfAnalyze {
 
     public static void mainOfAnalyze(String args) {
         try {
-            long start= System.currentTimeMillis();
+
             //Парсим все java-исходники из указанной директории в список DocSegments - типа JavaDocSegment
             ParseDirectory(FolderCreate.file + args);
-            long end = System.currentTimeMillis();
-
-            out.println("Finished parsing " +(end - start)/1000);
+            count++;
 
             //PrintDocsReport распечатывает в PlainComments.txt извлеченные комментарии
             PrintDocsReport(DocSegments, args);
 
-        } catch (ConcurrentModificationException ignored) {} catch (Exception e) {
+        } catch (ConcurrentModificationException ignored) {
+        } catch (Exception e) {
             e.printStackTrace();
             return;
         }
     }
 
 
+    public static void ParseJavadoc(String block, String range, String date, String signature, String nameOfCommits, String namespace, String path) throws IOException {
+        if (block.contains("{@inheritDoc}")) return;
+        if (signature.contains("package")) return;
 
-    public static void ParseJavadoc(String block, String range, String signature, String namespace, String path) throws IOException {
-        if(block.contains("{@inheritDoc}")) return;
-        if(signature.contains("package")) return;
-
-        if(signature!=null&&block.length()>0) {
-            ArrayList<String> sents= Ngrams.sanitiseToWords(block);
-            if(sents.size()>=MinCommentSize) {
-                JavaDocSegment segment=new JavaDocSegment(block,sents,range, signature, namespace, path);
+        if (signature != null && block.length() > 0) {
+            ArrayList<String> sents = Ngrams.sanitiseToWords(block);
+            if (sents.size() >= MinCommentSize) {
+                JavaDocSegment segment = new JavaDocSegment(block, sents, range, date, signature, nameOfCommits, namespace, path);
 
                 theLock.lock();
                 DocSegments.add(segment);
@@ -78,11 +78,11 @@ public class MainOfAnalyze {
 
 
     public static void ParseDirectory(String Path) throws IOException {
-        File path=new File(Path);
-        if(path.isFile())
+        File path = new File(Path);
+        if (path.isFile())
             ParseFile(new File(Path));
         else {
-            ArrayList<File> files=new ArrayList<>();
+            ArrayList<File> files = new ArrayList<>();
             new com.company.DirExplorer((level, fpath, file) -> fpath.endsWith(".java"), (level, fpath, file) -> {
                 files.add(file);
             }).explore(path);
@@ -103,14 +103,14 @@ public class MainOfAnalyze {
         if (file.getAbsolutePath().contains(".java")) {
             byte[] encodedContent = Files.readAllBytes(file.toPath());
             try {
-                String content=new String(encodedContent, StandardCharsets.UTF_8);
-                String namespace="";
+                String content = new String(encodedContent, StandardCharsets.UTF_8);
+                String namespace = "";
                 Matcher matcher = JavaDocPattern.matcher(content);
                 while (matcher.find()) {
                     if (matcher.group(matcher.groupCount()) == null)
                         namespace = matcher.group(1);
                     else
-                        ParseJavadoc(matcher.group(2).intern(), matcher.start() + "-" + matcher.end(), matcher.group(matcher.groupCount()), namespace, file.getAbsolutePath());
+                        ParseJavadoc(matcher.group(2).intern(), matcher.start() + "-" + matcher.end(), Connect.arraylistOfDate.get(count),  matcher.group(matcher.groupCount()), Connect.arraylistOfCommits.get(count), namespace, file.getAbsolutePath());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -118,5 +118,5 @@ public class MainOfAnalyze {
         }
     }
 
-    static Lock theLock=new ReentrantReadWriteLock().writeLock();
+    static Lock theLock = new ReentrantReadWriteLock().writeLock();
 }
