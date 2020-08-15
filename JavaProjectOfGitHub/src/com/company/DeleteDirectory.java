@@ -6,7 +6,7 @@ import java.io.IOException;
 public class DeleteDirectory
 
 {
-    private static final String SRC__FOLDER ="C:\\" + FolderCreate.file.getName();
+    private static final String SRC__FOLDER = Main.PuthToFile + FolderCreate.file.getName();
 
     public static void DeleteDirectory()
     {

@@ -24,17 +24,17 @@ public class FolderCreate {
             folderName = "JSON Folder(1)";
         }
 
-        for (Path path = Paths.get("C:\\" + folderName); Files.exists(path, new LinkOption[0]); ++count) {
+        for (Path path = Paths.get(Main.PuthToFile + folderName); Files.exists(path, new LinkOption[0]); ++count) {
             if (isCreated) {
                 folderName = "JSON Folder(" + count + ")";
             }
             if (!isCreated) {
                 folderName = "Project Folder(" + count + ")";
             }
-            path = Paths.get("C:\\" + folderName);
+            path = Paths.get(Main.PuthToFile + folderName);
         }
 
-        folder = new File("C:\\" + folderName);
+        folder = new File(Main.PuthToFile + folderName);
         if (!isCreated) {
             file = folder;
         }

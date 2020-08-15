@@ -11,6 +11,7 @@ import static java.lang.System.out;
 public class Main {
 
     public static Boolean isJsonFileCreated = false;
+    public static String PuthToFile = "D:\\";
 
     public static void main(String[] args) throws Exception {
 
@@ -56,6 +57,8 @@ public class Main {
                         while (i != UnZip.arraylist.size()) {
                             MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
                             mainOfAnalyze.mainOfAnalyze(UnZip.arraylist.get(i));
+                            ZipFile.Zip();
+                            ZipFile.jsonToDelete.delete();
                             i++;
                         }
                         long end = System.currentTimeMillis();

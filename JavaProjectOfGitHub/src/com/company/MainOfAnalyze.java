@@ -24,6 +24,9 @@ public class MainOfAnalyze {
 
     public static int count = 0;
 
+    public static String nameOfOutJson;
+
+
 
     static final Pattern JavaDocPattern = Pattern.compile("(?s)package\\s*(.*?);|(/\\*\\*(?s:(?!\\*/).)*\\*/)(.*?)[;\\{]");
 
@@ -33,6 +36,7 @@ public class MainOfAnalyze {
         comments.forEach(segment -> {
             comments.add(segment);
             try (PrintWriter outJson = new PrintWriter(FolderCreate.folder + args + ".json")) {
+                nameOfOutJson = FolderCreate.folder + args + ".json";
                 String response = json.toJson(comments);
                 outJson.println(response);
             } catch (Exception e) {
@@ -46,7 +50,7 @@ public class MainOfAnalyze {
 
             //Парсим все java-исходники из указанной директории в список DocSegments - типа JavaDocSegment
             ParseDirectory(FolderCreate.file + args);
-            count++;
+
 
             //PrintDocsReport распечатывает в PlainComments.txt извлеченные комментарии
             PrintDocsReport(DocSegments, args);
@@ -60,6 +64,9 @@ public class MainOfAnalyze {
 
 
     public static void ParseJavadoc(String block, String range, String date, String signature, String nameOfCommits, String namespace, String path) throws IOException {
+        if (Connect.arraylistOfCommits.size() - 1 > count) {
+            count++;
+        }
         if (block.contains("{@inheritDoc}")) return;
         if (signature.contains("package")) return;
 
@@ -109,8 +116,9 @@ public class MainOfAnalyze {
                 while (matcher.find()) {
                     if (matcher.group(matcher.groupCount()) == null)
                         namespace = matcher.group(1);
-                    else
-                        ParseJavadoc(matcher.group(2).intern(), matcher.start() + "-" + matcher.end(), Connect.arraylistOfDate.get(count),  matcher.group(matcher.groupCount()), Connect.arraylistOfCommits.get(count), namespace, file.getAbsolutePath());
+                    else {
+                        ParseJavadoc(matcher.group(2).intern(), matcher.start() + "-" + matcher.end(), Connect.arraylistOfDate.get(count), matcher.group(matcher.groupCount()), Connect.arraylistOfCommits.get(count), namespace, file.getAbsolutePath());
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

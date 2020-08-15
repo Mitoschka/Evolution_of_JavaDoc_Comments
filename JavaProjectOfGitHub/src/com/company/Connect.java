@@ -45,7 +45,7 @@ public class Connect {
 
         while (i != arrlist.size()) {
             String links = link + "/archive/" + (String) arrlist.get(i) + ".zip";
-            File out = new File("C:\\" + FolderCreate.folderName + "\\" + arrlist.get(i) + ".zip");
+            File out = new File(Main.PuthToFile + FolderCreate.folderName + "\\" + arrlist.get(i) + ".zip");
             out.deleteOnExit();
             ++i;
             current = new Thread(new Download(links, out));
