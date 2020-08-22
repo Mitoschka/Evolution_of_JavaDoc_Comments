@@ -61,9 +61,9 @@ public class Analyze {
                 }
             });
             while (countOfElementThatWillBeComparedWithTheRest < ArrayOfCommits.size()) {
-                int i = 1;
                 LinkedList<DocCommit> ArrayOfDuplication = new LinkedList<>();
                 ArrayOfDuplication.add(ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest));
+                int i = 1;
                 while (i < ArrayOfCommits.size()) {
                     if (ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.Signature.equals(ArrayOfCommits.get(i).DocSegments.Signature)
                             && ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.Namespace.equals(ArrayOfCommits.get(i).DocSegments.Namespace)) {
@@ -90,6 +90,7 @@ public class Analyze {
                 ArrayOfCommits.remove(countOfElementThatWillBeComparedWithTheRest);
             }
         }
+        CheckUniqueElementInArrayOfLog();
     }
 
     public static void AnalyzeFile(File file) {
@@ -101,9 +102,7 @@ public class Analyze {
             docCommits = gson.fromJson(reader, DocCommit[].class);
             ArrayOfCommits.add(docCommits[count]);
             count++;
-            while (file1.exists()) {
-                file1.delete();
-            }
+            file1.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,5 +110,24 @@ public class Analyze {
 
     public static String readFileAsString(String file) throws Exception {
         return new String(Files.readAllBytes(Paths.get(file)));
+    }
+
+    public static void CheckUniqueElementInArrayOfLog() {
+        int i = 0;
+        while (i < ArrayOfLog.size()) {
+            int j = 0;
+            while (j + 1 < ArrayOfLog.get(i).size()) {
+                if (ArrayOfLog.get(i).get(j).DocSegments.Content.equals(ArrayOfLog.get(i).get(j + 1).DocSegments.Content) &&
+                        (ArrayOfLog.get(i).get(j).DocSegments.Namespace.equals(ArrayOfLog.get(i).get(j + 1).DocSegments.Namespace) &&
+                                (ArrayOfLog.get(i).get(j).DocSegments.Signature.equals(ArrayOfLog.get(i).get(j + 1).DocSegments.Signature) &&
+                                        (ArrayOfLog.get(i).get(j).DateTime.equals(ArrayOfLog.get(i).get(j + 1).DateTime) &&
+                                                (ArrayOfLog.get(i).get(j).Name.equals(ArrayOfLog.get(i).get(j + 1).Name)))))) {
+                    ArrayOfLog.remove(j);
+                } else {
+                    j++;
+                }
+            }
+            i++;
+        }
     }
 }
