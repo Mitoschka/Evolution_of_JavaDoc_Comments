@@ -12,6 +12,7 @@ public class Main {
 
     public static Boolean isJsonFileCreated = false;
     public static String PuthToFile = "D:\\";
+    public static Boolean isUnZip = false;
 
     public static void main(String[] args) throws Exception {
 
@@ -30,10 +31,10 @@ public class Main {
                 server.Connect(newString, link);
                 count++;
             } catch (MalformedURLException e) {
-                System.out.println("\nOops, there was an error, maybe you entered the wrong link, try again.");
-                System.out.print("Input URL of GitHub: ");
+                System.out.println("\nOops, there was an error, maybe you entered the wrong link, try again.\n");
+                System.out.print("\nInput URL of GitHub: ");
                 link = in.nextLine();
-                System.out.print("Please, wait... ");
+                System.out.print("\nPlease, wait... ");
             } catch (SSLException e) {
                 continue;
             } catch (ConnectException e) {
@@ -42,7 +43,7 @@ public class Main {
                 String exception = "Server returned HTTP response code: 403 for URL:";
                 if (e.getMessage().contains(exception)) {
                     if (!isOkay) {
-                        System.out.print("\n\nSorry, request limit exceeded, try again later or use a VPN");
+                        System.out.print("\n\nSorry, request limit exceeded, try again later or use a VPN\n");
                         FolderCreate.folder.delete();
                     } else {
                         System.out.print("\n\nAll file download complete." + "\n");
@@ -72,8 +73,8 @@ public class Main {
                     }
                     return;
                 } else {
-                    System.out.println("\nOops, there was an error, maybe you entered the wrong link, try again.");
-                    System.out.print("Input URL of GitHub: ");
+                    System.out.println("\nOops, there was an error, maybe you entered the wrong link, try again.\n");
+                    System.out.print("\nInput URL of GitHub: ");
                     link = in.nextLine();
                 }
             }

@@ -1,0 +1,236 @@
+[
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloInputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat implements InputFormat\u003cKey,Value\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloInputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setInputFormat(Class) "
+    },
+    "Name": "7e18cba6610128a5fd697d7d79657c62dcb32046",
+    "DateTime": "2013-01-22T18:08:30Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloOutputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloOutputFormat implements OutputFormat\u003cText,Mutation\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloOutputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setOutputFormat(Class) "
+    },
+    "Name": "a1873ab29505027d22e3fbaa13f9ac30a12900e9",
+    "DateTime": "2013-01-15T23:58:38Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class MapreduceWrapper ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eMapreduceWrapper class. Provides a wrapper to wrap { @link BSPJob} into the appropriate Hadoop type required by { @link AccumuloInputFormat} and{ @link AccumuloOutputFormat} static configurator methods. Useful for reusing code to set the job\u0027s configuration and not using the expected Hadoop API.\u003cp\u003e "
+    },
+    "Name": "c3779ba75536ccf6645c9d47c52a700699778827",
+    "DateTime": "2012-05-17T17:24:30Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public static TaskAttemptContext wrappedTaskAttemptContext(final BSPJob job) ",
+      "Namespace": "",
+      "Content": "Wraps a { @link BSPJob} for reading its { @link Configuration} within Accumulo MapReduce classes\u0027 protected static configuration getters. @param job the { @link BSPJob} instance to be wrapped @return an instance of { @link TaskAttemptContext} whose { @link Configuration} is the same as the job "
+    },
+    "Name": "a4df0d433396a227e8a119c141283e6f0b32c575",
+    "DateTime": "2012-05-16T17:42:07Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public static Job wrappedJob(BSPJob job) ",
+      "Namespace": "",
+      "Content": "Wraps a { @link BSPJob} for writing its { @link Configuration} within Accumulo MapReduce classes\u0027 public static configuration setters. @param job the { @link BSPJob} instance to be wrapped @return an instance of { @link Job} that exposes { @link BSPJob#getConfiguration()} via { @link Job#getConfiguration()}; no other methods of { @link Job} areimplemented, so this object cannot be used for anything other than editing the { @link BSPJob}\u0027s { @link Configuration} "
+    },
+    "Name": "bb37f5b2f6fdf2ef95fe42f4ad8f3717222e621f",
+    "DateTime": "2012-05-16T17:42:07Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloInputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat implements InputFormat\u003cKey,Value\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloInputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setInputFormat(Class) "
+    },
+    "Name": "7e18cba6610128a5fd697d7d79657c62dcb32046",
+    "DateTime": "2013-01-22T18:08:30Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloInputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat implements InputFormat\u003cKey,Value\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloInputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setInputFormat(Class) "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloOutputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloOutputFormat implements OutputFormat\u003cText,Mutation\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloOutputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setOutputFormat(Class) "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class MapreduceWrapper ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eMapreduceWrapper class. Provides a wrapper to wrap { @link BSPJob} into the appropriate Hadoop type required by { @link AccumuloInputFormat} and{ @link AccumuloOutputFormat} static configurator methods. Useful for reusing code to set the job\u0027s configuration and not using the expected Hadoop API.\u003cp\u003e "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public static TaskAttemptContext wrappedTaskAttemptContext(final BSPJob job) ",
+      "Namespace": "",
+      "Content": "Wraps a { @link BSPJob} for reading its { @link Configuration} within Accumulo MapReduce classes\u0027 protected static configuration getters. @param job the { @link BSPJob} instance to be wrapped @return an instance of { @link TaskAttemptContext} whose { @link Configuration} is the same as the job "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public static Job wrappedJob(BSPJob job) ",
+      "Namespace": "",
+      "Content": "Wraps a { @link BSPJob} for writing its { @link Configuration} within Accumulo MapReduce classes\u0027 public static configuration setters. @param job the { @link BSPJob} instance to be wrapped @return an instance of { @link Job} that exposes { @link BSPJob#getConfiguration()} via { @link Job#getConfiguration()}; no other methods of { @link Job} areimplemented, so this object cannot be used for anything other than editing the { @link BSPJob}\u0027s { @link Configuration} "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloInputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat implements InputFormat\u003cKey,Value\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloInputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setInputFormat(Class) "
+    },
+    "Name": "7e18cba6610128a5fd697d7d79657c62dcb32046",
+    "DateTime": "2013-01-22T18:08:30Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloInputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat implements InputFormat\u003cKey,Value\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloInputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setInputFormat(Class) "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloOutputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloOutputFormat implements OutputFormat\u003cText,Mutation\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloOutputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setOutputFormat(Class) "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class MapreduceWrapper ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eMapreduceWrapper class. Provides a wrapper to wrap { @link BSPJob} into the appropriate Hadoop type required by { @link AccumuloInputFormat} and{ @link AccumuloOutputFormat} static configurator methods. Useful for reusing code to set the job\u0027s configuration and not using the expected Hadoop API.\u003cp\u003e "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public static TaskAttemptContext wrappedTaskAttemptContext(final BSPJob job) ",
+      "Namespace": "",
+      "Content": "Wraps a { @link BSPJob} for reading its { @link Configuration} within Accumulo MapReduce classes\u0027 protected static configuration getters. @param job the { @link BSPJob} instance to be wrapped @return an instance of { @link TaskAttemptContext} whose { @link Configuration} is the same as the job "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public static Job wrappedJob(BSPJob job) ",
+      "Namespace": "",
+      "Content": "Wraps a { @link BSPJob} for writing its { @link Configuration} within Accumulo MapReduce classes\u0027 public static configuration setters. @param job the { @link BSPJob} instance to be wrapped @return an instance of { @link Job} that exposes { @link BSPJob#getConfiguration()} via { @link Job#getConfiguration()}; no other methods of { @link Job} areimplemented, so this object cannot be used for anything other than editing the { @link BSPJob}\u0027s { @link Configuration} "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloInputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat implements InputFormat\u003cKey,Value\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloInputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setInputFormat(Class) "
+    },
+    "Name": "7e18cba6610128a5fd697d7d79657c62dcb32046",
+    "DateTime": "2013-01-22T18:08:30Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloInputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat implements InputFormat\u003cKey,Value\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloInputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setInputFormat(Class) "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloOutputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloOutputFormat implements OutputFormat\u003cText,Mutation\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloOutputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setOutputFormat(Class) "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class MapreduceWrapper ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eMapreduceWrapper class. Provides a wrapper to wrap { @link BSPJob} into the appropriate Hadoop type required by { @link AccumuloInputFormat} and{ @link AccumuloOutputFormat} static configurator methods. Useful for reusing code to set the job\u0027s configuration and not using the expected Hadoop API.\u003cp\u003e "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public static TaskAttemptContext wrappedTaskAttemptContext(final BSPJob job) ",
+      "Namespace": "",
+      "Content": "Wraps a { @link BSPJob} for reading its { @link Configuration} within Accumulo MapReduce classes\u0027 protected static configuration getters. @param job the { @link BSPJob} instance to be wrapped @return an instance of { @link TaskAttemptContext} whose { @link Configuration} is the same as the job "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public static Job wrappedJob(BSPJob job) ",
+      "Namespace": "",
+      "Content": "Wraps a { @link BSPJob} for writing its { @link Configuration} within Accumulo MapReduce classes\u0027 public static configuration setters. @param job the { @link BSPJob} instance to be wrapped @return an instance of { @link Job} that exposes { @link BSPJob#getConfiguration()} via { @link Job#getConfiguration()}; no other methods of { @link Job} areimplemented, so this object cannot be used for anything other than editing the { @link BSPJob}\u0027s { @link Configuration} "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloInputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat implements InputFormat\u003cKey,Value\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloInputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setInputFormat(Class) "
+    },
+    "Name": "7e18cba6610128a5fd697d7d79657c62dcb32046",
+    "DateTime": "2013-01-22T18:08:30Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "@Testpublic void testMaxVersions() throws IOException ",
+      "Namespace": "",
+      "Content": "Test basic setting \u0026 getting of max versions. @throws IOExceptionSignals that an IO exception has occurred. "
+    },
+    "Name": "9004b64edc6de18aaeeb1ec4b363e557691b824f",
+    "DateTime": "2012-04-23T17:25:25Z"
+  },
+  {
+    "DocSegments": {
+      "Signature": "public class AccumuloInputFormat extends org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat implements InputFormat\u003cKey,Value\u003e ",
+      "Namespace": "",
+      "Content": "\u003cp\u003eAccumuloInputFormat class. To be used with Hama BSP.\u003cp\u003e @see BSPJob#setInputFormat(Class) "
+    },
+    "Name": "7e18cba6610128a5fd697d7d79657c62dcb32046",
+    "DateTime": "2013-01-22T18:08:30Z"
+  }
+]

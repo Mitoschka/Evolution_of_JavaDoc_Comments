@@ -14,8 +14,8 @@ public class CreateLog {
                 writer.write(i + 1 + " API element" + "  {\n");
                 while (Analyze.ArrayOfLog.get(i).size() > j) {
                     writer.write("\n     Item signature #" + (j + 1) + "\n\n");
-                    writer.write("\t> " + Analyze.ArrayOfLog.get(i).get(j).NameOfCommits + " || " + Analyze.ArrayOfLog.get(i).get(j).Date + " || " + Analyze.ArrayOfLog.get(i).get(j).Signature + " || " + Analyze.ArrayOfLog.get(i).get(j).Namespace + "\n\n");
-                    writer.write("\t> " + Analyze.ArrayOfLog.get(i).get(j).Content + "\n\n");
+                    writer.write("\t> " + Analyze.ArrayOfLog.get(i).get(j).Name + " || " + Analyze.ArrayOfLog.get(i).get(j).DateTime + " || " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.Signature + " || " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.Namespace + "\n\n");
+                    writer.write("\t> " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.Content + "\n\n");
                     writer.write("\t--------------------------------\n\n");
                     j++;
                 }

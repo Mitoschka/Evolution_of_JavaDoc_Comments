@@ -12,6 +12,7 @@ public class Download implements Runnable {
     private final File out;
     private static int i = 0;
 
+
     protected Download(String link, File out) {
         this.link = link;
         this.out = out;

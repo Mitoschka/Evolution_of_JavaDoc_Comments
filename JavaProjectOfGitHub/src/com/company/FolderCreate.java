@@ -14,7 +14,6 @@ public class FolderCreate {
     private static int count = 2;
     public static boolean isCreated = false;
 
-
     protected FolderCreate() {
 
         if (!isCreated) {
@@ -26,7 +25,7 @@ public class FolderCreate {
 
         for (Path path = Paths.get(Main.PuthToFile + folderName); Files.exists(path, new LinkOption[0]); ++count) {
             if (isCreated) {
-                folderName = "JSON Folder(" + count + ")";
+                folderName = "JSON Folder(" + (count - 1) + ")";
             }
             if (!isCreated) {
                 folderName = "Project Folder(" + count + ")";

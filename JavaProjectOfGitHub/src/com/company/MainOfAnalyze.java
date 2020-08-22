@@ -20,9 +20,11 @@ import static java.lang.System.out;
 public class MainOfAnalyze {
     public static int MinCommentSize = 10;
 
-    public static ArrayList<JavaDocSegment> DocSegments = new ArrayList<>();
+    public static ArrayList<JavaDocSegment> JavaDocSegments = new ArrayList<JavaDocSegment>();
+    public static ArrayList DocSegments = new ArrayList();
 
     public static int count = 0;
+    public static int countofDoc = 0;
 
     public static String nameOfOutJson;
 
@@ -31,13 +33,13 @@ public class MainOfAnalyze {
     static final Pattern JavaDocPattern = Pattern.compile("(?s)package\\s*(.*?);|(/\\*\\*(?s:(?!\\*/).)*\\*/)(.*?)[;\\{]");
 
 
-    public static void PrintDocsReport(ArrayList<JavaDocSegment> comments, String args) {
+    public static void PrintDocsReport(ArrayList<DocCommit> commit, String args) {
         Gson json = new Gson();
-        comments.forEach(segment -> {
-            comments.add(segment);
+        commit.forEach(segment -> {
+            commit.add(segment);
             try (PrintWriter outJson = new PrintWriter(FolderCreate.folder + args + ".json")) {
                 nameOfOutJson = FolderCreate.folder + args + ".json";
-                String response = json.toJson(comments);
+                String response = json.toJson(commit);
                 outJson.println(response);
             } catch (Exception e) {
                 out.println(e.getMessage());
@@ -63,7 +65,7 @@ public class MainOfAnalyze {
     }
 
 
-    public static void ParseJavadoc(String block, String range, String date, String signature, String nameOfCommits, String namespace, String path) throws IOException {
+    public static void ParseJavadoc(String block, String date, String signature, String nameOfCommits, String namespace) throws IOException {
         if (Connect.arraylistOfCommits.size() - 1 > count) {
             count++;
         }
@@ -73,8 +75,9 @@ public class MainOfAnalyze {
         if (signature != null && block.length() > 0) {
             ArrayList<String> sents = Ngrams.sanitiseToWords(block);
             if (sents.size() >= MinCommentSize) {
-                JavaDocSegment segment = new JavaDocSegment(block, sents, range, date, signature, nameOfCommits, namespace, path);
-
+                JavaDocSegments.add(new JavaDocSegment(block, sents, signature, namespace));
+                DocCommit segment = new DocCommit(JavaDocSegments.get(countofDoc), nameOfCommits, date);
+                countofDoc++;
                 theLock.lock();
                 DocSegments.add(segment);
                 theLock.unlock();
@@ -117,7 +120,7 @@ public class MainOfAnalyze {
                     if (matcher.group(matcher.groupCount()) == null)
                         namespace = matcher.group(1);
                     else {
-                        ParseJavadoc(matcher.group(2).intern(), matcher.start() + "-" + matcher.end(), Connect.arraylistOfDate.get(count), matcher.group(matcher.groupCount()), Connect.arraylistOfCommits.get(count), namespace, file.getAbsolutePath());
+                        ParseJavadoc(matcher.group(2).intern(), Connect.arraylistOfDate.get(count), matcher.group(matcher.groupCount()), Connect.arraylistOfCommits.get(count), namespace);
                     }
                 }
             } catch (Exception e) {

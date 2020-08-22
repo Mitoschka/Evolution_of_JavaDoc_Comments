@@ -1,6 +1,7 @@
 package com.company;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -9,9 +10,9 @@ import java.util.LinkedList;
 
 public class Analyze {
 
-    public static LinkedList<JavaDocSegment> ArrayOfCommits = new LinkedList<>();
-    public static LinkedList<LinkedList<JavaDocSegment>> ArrayOfLog = new LinkedList<LinkedList<JavaDocSegment>>();
-    public static JavaDocSegment[] javaDocSegment;
+    public static LinkedList<DocCommit> ArrayOfCommits = new LinkedList<>();
+    public static LinkedList<LinkedList<DocCommit>> ArrayOfLog = new LinkedList<>();
+    public static DocCommit[] docCommits;
 
     public static int count = 0;
     public static int countOfElementThatWillBeComparedWithTheRest = 0;
@@ -19,8 +20,11 @@ public class Analyze {
     public static Boolean isUnZip = false;
     public static File file1;
 
+    public static long firstSizeInBytes = -1;
+    public static long secondSizeInBytes = -3;
 
-    public static void AnalyzeDirectory(String Path) throws Exception {
+
+    public static void AnalyzeDirectory(String Path) {
         File path = new File(Path);
         if (path.isFile())
             AnalyzeFile(new File(Path));
@@ -36,12 +40,20 @@ public class Analyze {
                     UnZip.UnZip(file);
                     file1 = new File(Path + "\\" + file.getName().replace(".zip", ""));
                     while (!isUnZip) {
-                        if (file1.exists()) {
-                            AnalyzeFile(file1);
-                            isUnZip = true;
-                        } else {
+                        int count = 0;
+                        while (!file1.exists() && count < 200) {
+                            Thread.sleep(100);
+                            isUnZip = false;
+                            count++;
+                        }
+                        while (firstSizeInBytes != secondSizeInBytes) {
+                            firstSizeInBytes = file1.length();
+                            Thread.sleep(100);
+                            secondSizeInBytes = file1.length();
                             isUnZip = false;
                         }
+                        AnalyzeFile(file1);
+                        isUnZip = true;
                     }
                     file.delete();
                 } catch (Exception e) {
@@ -50,11 +62,11 @@ public class Analyze {
             });
             while (countOfElementThatWillBeComparedWithTheRest < ArrayOfCommits.size()) {
                 int i = 1;
-                LinkedList<JavaDocSegment> ArrayOfDuplication = new LinkedList<>();
+                LinkedList<DocCommit> ArrayOfDuplication = new LinkedList<>();
                 ArrayOfDuplication.add(ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest));
                 while (i < ArrayOfCommits.size()) {
-                    if (ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).Signature.equals(ArrayOfCommits.get(i).Signature)
-                            && ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).Namespace.equals(ArrayOfCommits.get(i).Namespace)) {
+                    if (ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.Signature.equals(ArrayOfCommits.get(i).DocSegments.Signature)
+                            && ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.Namespace.equals(ArrayOfCommits.get(i).DocSegments.Namespace)) {
                         if (!ArrayOfDuplication.contains(ArrayOfCommits.get(i))) {
                             ArrayOfDuplication.add(ArrayOfCommits.get(i));
                             ArrayOfCommits.remove(i);
@@ -64,7 +76,7 @@ public class Analyze {
                 }
                 int j = 0;
                 while (j + 1 < ArrayOfDuplication.size()) {
-                    if (ArrayOfDuplication.get(j).Content.equals(ArrayOfDuplication.get(j + 1).Content)) {
+                    if (ArrayOfDuplication.get(j).DocSegments.Content.equals(ArrayOfDuplication.get(j + 1).DocSegments.Content)) {
                         ArrayOfDuplication.remove(j);
                     } else {
                         j++;
@@ -83,14 +95,17 @@ public class Analyze {
     public static void AnalyzeFile(File file) {
         try {
             String jsonToString = readFileAsString(file.toString());
-            javaDocSegment = new Gson().fromJson(jsonToString, JavaDocSegment[].class);
-            ArrayOfCommits.add(javaDocSegment[count]);
+            Gson gson = new Gson();
+            JsonReader reader = new JsonReader(new StringReader(jsonToString));
+            reader.setLenient(true);
+            docCommits = gson.fromJson(reader, DocCommit[].class);
+            ArrayOfCommits.add(docCommits[count]);
             count++;
-            file1.delete();
-        } catch (IndexOutOfBoundsException e) {
+            while (file1.exists()) {
+                file1.delete();
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (Exception exception) {
-            exception.printStackTrace();
         }
     }
 
@@ -98,4 +113,3 @@ public class Analyze {
         return new String(Files.readAllBytes(Paths.get(file)));
     }
 }
-

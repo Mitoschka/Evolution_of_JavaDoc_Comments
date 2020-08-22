@@ -16,6 +16,10 @@ public class Connect {
 
     public static List<String> arraylistOfCommits = new ArrayList();
     public static List<String> arraylistOfDate = new ArrayList();
+    public static File out;
+
+    public static long firstSizeInBytes = -1;
+    public static long secondSizeInBytes = -6;
 
     protected void Connect(String newString, String link) throws Exception, ConnectException {
 
@@ -45,18 +49,30 @@ public class Connect {
 
         while (i != arrlist.size()) {
             String links = link + "/archive/" + (String) arrlist.get(i) + ".zip";
-            File out = new File(Main.PuthToFile + FolderCreate.folderName + "\\" + arrlist.get(i) + ".zip");
+            out = new File(Main.PuthToFile + FolderCreate.folderName + "\\" + arrlist.get(i) + ".zip");
             out.deleteOnExit();
             ++i;
             current = new Thread(new Download(links, out));
             current.start();
-            while (!current.isInterrupted()) {
+            int countOfExists = 0;
+            int countOfCurrent = 0;
+            while (!current.isInterrupted() && countOfCurrent < 2) {
                 try {
-                    Thread.sleep(250);
+                    while (!out.exists() && countOfExists < 100) {
+                        Thread.sleep(100);
+                        countOfExists++;
+                    }
+                    while (firstSizeInBytes != secondSizeInBytes) {
+                        firstSizeInBytes = out.length();
+                        Thread.sleep(50);
+                        secondSizeInBytes = out.length();
+                    }
                     Connect.current.interrupt();
                 } catch (InterruptedException exception1) {
                     exception1.printStackTrace();
                 }
+                Thread.sleep(50);
+                countOfCurrent++;
             }
         }
     }
