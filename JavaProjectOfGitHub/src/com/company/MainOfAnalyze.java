@@ -18,33 +18,33 @@ import static java.lang.System.out;
 
 
 public class MainOfAnalyze {
+
     public static int MinCommentSize = 10;
 
-    public static ArrayList<JavaDocSegment> JavaDocSegments = new ArrayList<JavaDocSegment>();
+    public static ArrayList<JavaDocSegment> JavaDocSegments = new ArrayList<>();
     public static ArrayList DocSegments = new ArrayList();
 
     public static int count = 0;
-    public static int countofDoc = 0;
 
     public static String nameOfOutJson;
-
 
 
     static final Pattern JavaDocPattern = Pattern.compile("(?s)package\\s*(.*?);|(/\\*\\*(?s:(?!\\*/).)*\\*/)(.*?)[;\\{]");
 
 
-    public static void PrintDocsReport(ArrayList<DocCommit> commit, String args) {
+    public static void PrintDocsReport(ArrayList<DocCommit> comments, String args) {
         Gson json = new Gson();
-        commit.forEach(segment -> {
-            commit.add(segment);
-            try (PrintWriter outJson = new PrintWriter(FolderCreate.folder + args + ".json")) {
-                nameOfOutJson = FolderCreate.folder + args + ".json";
-                String response = json.toJson(commit);
-                outJson.println(response);
-            } catch (Exception e) {
-                out.println(e.getMessage());
+        try (PrintWriter outJson = new PrintWriter(FolderCreate.folder + args + ".json")) {
+            nameOfOutJson = FolderCreate.folder + args + ".json";
+            String response = json.toJson(comments);
+            outJson.println(response);
+            while (DocSegments.size() != 0) {
+                JavaDocSegments.remove(0);
+                DocSegments.remove(0);
             }
-        });
+        } catch (Exception e) {
+            out.println(e.getMessage());
+        }
     }
 
     public static void mainOfAnalyze(String args) {
@@ -52,7 +52,6 @@ public class MainOfAnalyze {
 
             //Парсим все java-исходники из указанной директории в список DocSegments - типа JavaDocSegment
             ParseDirectory(FolderCreate.file + args);
-
 
             //PrintDocsReport распечатывает в PlainComments.txt извлеченные комментарии
             PrintDocsReport(DocSegments, args);
@@ -75,9 +74,8 @@ public class MainOfAnalyze {
         if (signature != null && block.length() > 0) {
             ArrayList<String> sents = Ngrams.sanitiseToWords(block);
             if (sents.size() >= MinCommentSize) {
-                JavaDocSegments.add(new JavaDocSegment(block, sents, signature, namespace));
-                DocCommit segment = new DocCommit(JavaDocSegments.get(countofDoc), nameOfCommits, date);
-                countofDoc++;
+                JavaDocSegments.add(new JavaDocSegment(block, signature, namespace));
+                DocCommit segment = new DocCommit(JavaDocSegments, nameOfCommits, date);
                 theLock.lock();
                 DocSegments.add(segment);
                 theLock.unlock();

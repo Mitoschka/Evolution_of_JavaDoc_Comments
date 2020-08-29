@@ -1,3 +1,4 @@
+
 package com.company;
 
 import java.io.*;
@@ -14,8 +15,8 @@ public class CreateLog {
                 writer.write(i + 1 + " API element" + "  {\n");
                 while (Analyze.ArrayOfLog.get(i).size() > j) {
                     writer.write("\n     Item signature #" + (j + 1) + "\n\n");
-                    writer.write("\t> " + Analyze.ArrayOfLog.get(i).get(j).Name + " || " + Analyze.ArrayOfLog.get(i).get(j).DateTime + " || " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.Signature + " || " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.Namespace + "\n\n");
-                    writer.write("\t> " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.Content + "\n\n");
+                    writer.write("\t> " + Analyze.ArrayOfLog.get(i).get(j).Name + " || " + Analyze.ArrayOfLog.get(i).get(j).DateTime + " || " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.get(0).Signature + " || " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.get(0).Namespace  + "\n\n");
+                    writer.write("\t> " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.get(0).Content + "\n\n");
                     writer.write("\t--------------------------------\n\n");
                     j++;
                 }

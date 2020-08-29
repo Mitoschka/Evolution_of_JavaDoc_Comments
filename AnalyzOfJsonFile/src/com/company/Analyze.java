@@ -6,16 +6,18 @@ import com.google.gson.stream.JsonReader;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Analyze {
 
     public static LinkedList<DocCommit> ArrayOfCommits = new LinkedList<>();
+    public static DocCommit ArrayOfCommitsSegments;
+    public static LinkedList<DocCommit> ArrayOfCommitsSegmentsElement = new LinkedList<>();
     public static LinkedList<LinkedList<DocCommit>> ArrayOfLog = new LinkedList<>();
     public static DocCommit[] docCommits;
 
     public static int count = 0;
-    public static int countOfElementThatWillBeComparedWithTheRest = 0;
     public static String zipFileName;
     public static Boolean isUnZip = false;
     public static File file1;
@@ -60,37 +62,9 @@ public class Analyze {
                     e.printStackTrace();
                 }
             });
-            while (countOfElementThatWillBeComparedWithTheRest < ArrayOfCommits.size()) {
-                LinkedList<DocCommit> ArrayOfDuplication = new LinkedList<>();
-                ArrayOfDuplication.add(ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest));
-                int i = 1;
-                while (i < ArrayOfCommits.size()) {
-                    if (ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.Signature.equals(ArrayOfCommits.get(i).DocSegments.Signature)
-                            && ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.Namespace.equals(ArrayOfCommits.get(i).DocSegments.Namespace)) {
-                        if (!ArrayOfDuplication.contains(ArrayOfCommits.get(i))) {
-                            ArrayOfDuplication.add(ArrayOfCommits.get(i));
-                            ArrayOfCommits.remove(i);
-                        }
-                    }
-                    i++;
-                }
-                int j = 0;
-                while (j + 1 < ArrayOfDuplication.size()) {
-                    if (ArrayOfDuplication.get(j).DocSegments.Content.equals(ArrayOfDuplication.get(j + 1).DocSegments.Content)) {
-                        ArrayOfDuplication.remove(j);
-                    } else {
-                        j++;
-                    }
-                }
-                if (ArrayOfDuplication.size() > 1) {
-                    ArrayOfLog.add(ArrayOfDuplication);
-                } else {
-                    ArrayOfDuplication.remove(0);
-                }
-                ArrayOfCommits.remove(countOfElementThatWillBeComparedWithTheRest);
-            }
+            AnalyzeElements();
         }
-        CheckUniqueElementInArrayOfLog();
+
     }
 
     public static void AnalyzeFile(File file) {
@@ -103,6 +77,8 @@ public class Analyze {
             ArrayOfCommits.add(docCommits[count]);
             count++;
             file1.delete();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            file1.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,22 +88,70 @@ public class Analyze {
         return new String(Files.readAllBytes(Paths.get(file)));
     }
 
-    public static void CheckUniqueElementInArrayOfLog() {
-        int i = 0;
-        while (i < ArrayOfLog.size()) {
+    public static void AnalyzeElements() {
+        int countOfElementThatWillBeComparedWithTheRest = 0;
+        while (countOfElementThatWillBeComparedWithTheRest < ArrayOfCommits.size()) {
+            int i = 0;
             int j = 0;
-            while (j + 1 < ArrayOfLog.get(i).size()) {
-                if (ArrayOfLog.get(i).get(j).DocSegments.Content.equals(ArrayOfLog.get(i).get(j + 1).DocSegments.Content) &&
-                        (ArrayOfLog.get(i).get(j).DocSegments.Namespace.equals(ArrayOfLog.get(i).get(j + 1).DocSegments.Namespace) &&
-                                (ArrayOfLog.get(i).get(j).DocSegments.Signature.equals(ArrayOfLog.get(i).get(j + 1).DocSegments.Signature) &&
-                                        (ArrayOfLog.get(i).get(j).DateTime.equals(ArrayOfLog.get(i).get(j + 1).DateTime) &&
-                                                (ArrayOfLog.get(i).get(j).Name.equals(ArrayOfLog.get(i).get(j + 1).Name)))))) {
-                    ArrayOfLog.remove(j);
-                } else {
-                    j++;
+            while (j < ArrayOfCommits.size()) {
+                int k = 0;
+                while (k < ArrayOfCommits.get(i).DocSegments.size()) {
+                    ArrayList<JavaDocSegment> javaDocSegments = new ArrayList<>();
+                    javaDocSegments.add(ArrayOfCommits.get(i).DocSegments.get(k));
+                    ArrayOfCommitsSegments = new DocCommit(javaDocSegments, ArrayOfCommits.get(i).Name, ArrayOfCommits.get(i).DateTime);
+                    if (!ArrayOfCommitsSegmentsElement.contains(ArrayOfCommits.get(i).Name) &&
+                            (!ArrayOfCommitsSegmentsElement.contains(ArrayOfCommits.get(i).DateTime) &&
+                                    (!ArrayOfCommitsSegmentsElement.contains(ArrayOfCommits.get(i).DocSegments.get(k).Signature) &&
+                                            (!ArrayOfCommitsSegmentsElement.contains(ArrayOfCommits.get(i).DocSegments.get(k).Namespace))))) {
+                        ArrayOfCommitsSegmentsElement.add(ArrayOfCommitsSegments);
+                        ArrayOfCommits.get(i).DocSegments.remove(k);
+                    }
+                    k++;
                 }
+                i++;
+                j++;
             }
-            i++;
+            ArrayOfCommits.remove(countOfElementThatWillBeComparedWithTheRest);
         }
+        int countOfElementThatWillBeComparedWithTheRestOfElement = 0;
+        while (countOfElementThatWillBeComparedWithTheRestOfElement < ArrayOfCommitsSegmentsElement.size()) {
+            LinkedList<DocCommit> ArrayOfDuplication = new LinkedList<>();
+            ArrayOfDuplication.add(ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement));
+            int i = 1;
+            while (i < ArrayOfCommitsSegmentsElement.size()) {
+                if (ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement).DocSegments.get(0).Signature.equals(ArrayOfCommitsSegmentsElement.get(i).DocSegments.get(0).Signature)
+                        && ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement).DocSegments.get(0).Namespace.equals(ArrayOfCommitsSegmentsElement.get(i).DocSegments.get(0).Namespace)) {
+                    if (!ArrayOfDuplication.contains(ArrayOfCommitsSegmentsElement.get(i))) {
+                        ArrayOfDuplication.add(ArrayOfCommitsSegmentsElement.get(i));
+                        ArrayOfCommitsSegmentsElement.remove(i);
+                    }
+                }
+                i++;
+            }
+            CheckUniqueElementInArrayOfLog(ArrayOfDuplication);
+            if (ArrayOfDuplication.size() > 1) {
+                ArrayOfLog.add(ArrayOfDuplication);
+            } else {
+                ArrayOfDuplication.clear();
+            }
+            ArrayOfCommitsSegmentsElement.remove(countOfElementThatWillBeComparedWithTheRestOfElement);
+            System.out.println("\nThere are still " + ArrayOfCommitsSegmentsElement.size() + " files left\n");
+        }
+    }
+
+    public static LinkedList<DocCommit> CheckUniqueElementInArrayOfLog(LinkedList<DocCommit> arrayOfDuplication) {
+        int i = 0;
+            while (i < arrayOfDuplication.size()) {
+                int countOfUniqueElement = 1 + i;
+                while (arrayOfDuplication.size() > countOfUniqueElement) {
+                    if (arrayOfDuplication.get(i).DocSegments.get(0).Content.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Content)) {
+                        arrayOfDuplication.remove(countOfUniqueElement);
+                    } else {
+                        countOfUniqueElement++;
+                    }
+                }
+                i++;
+            }
+        return arrayOfDuplication;
     }
 }
