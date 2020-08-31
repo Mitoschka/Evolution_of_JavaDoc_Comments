@@ -16,13 +16,16 @@ import java.util.regex.Pattern;
 
 import static java.lang.System.out;
 
-
 public class MainOfAnalyze {
 
     public static int MinCommentSize = 10;
 
-    public static ArrayList<JavaDocSegment> JavaDocSegments = new ArrayList<>();
-    public static ArrayList DocSegments = new ArrayList();
+    public static ArrayList DocSegments = new ArrayList<>();
+    public static ArrayList<String> ArrayOfNameOfCommits = new ArrayList<>();
+    public static ArrayList<String> ArrayOfDateTime = new ArrayList<>();
+    public static ArrayList<String> ArrayOfBlock = new ArrayList<>();
+    public static ArrayList<String> ArrayOfSignature = new ArrayList<>();
+    public static ArrayList<String> ArrayOfNamespace = new ArrayList<>();
 
     public static int count = 0;
 
@@ -38,9 +41,13 @@ public class MainOfAnalyze {
             nameOfOutJson = FolderCreate.folder + args + ".json";
             String response = json.toJson(comments);
             outJson.println(response);
-            while (DocSegments.size() != 0) {
-                JavaDocSegments.remove(0);
-                DocSegments.remove(0);
+            while ((DocSegments.size() != 0) || (ArrayOfNameOfCommits.size() != 0)) {
+                DocSegments.clear();
+                ArrayOfNameOfCommits.clear();
+                ArrayOfDateTime.clear();
+                ArrayOfBlock.clear();
+                ArrayOfNamespace.clear();
+                ArrayOfSignature.clear();
             }
         } catch (Exception e) {
             out.println(e.getMessage());
@@ -53,6 +60,7 @@ public class MainOfAnalyze {
             //Парсим все java-исходники из указанной директории в список DocSegments - типа JavaDocSegment
             ParseDirectory(FolderCreate.file + args);
 
+            Analyze();
             //PrintDocsReport распечатывает в PlainComments.txt извлеченные комментарии
             PrintDocsReport(DocSegments, args);
 
@@ -65,22 +73,41 @@ public class MainOfAnalyze {
 
 
     public static void ParseJavadoc(String block, String date, String signature, String nameOfCommits, String namespace) throws IOException {
-        if (Connect.arraylistOfCommits.size() - 1 > count) {
-            count++;
-        }
         if (block.contains("{@inheritDoc}")) return;
         if (signature.contains("package")) return;
 
         if (signature != null && block.length() > 0) {
             ArrayList<String> sents = Ngrams.sanitiseToWords(block);
             if (sents.size() >= MinCommentSize) {
-                JavaDocSegments.add(new JavaDocSegment(block, signature, namespace));
-                DocCommit segment = new DocCommit(JavaDocSegments, nameOfCommits, date);
-                theLock.lock();
-                DocSegments.add(segment);
-                theLock.unlock();
+                ArrayOfNameOfCommits.add(nameOfCommits);
+                ArrayOfDateTime.add(date);
+                ArrayOfBlock.add(block);
+                ArrayOfNamespace.add(namespace);
+                ArrayOfSignature.add(signature);
             }
+        }
+    }
 
+    public static void Analyze() {
+        int i = 0;
+        while (i < ArrayOfNameOfCommits.size()) {
+            ArrayList<JavaDocSegment> JavaDocSegments = new ArrayList<>();
+            int k = 1;
+            JavaDocSegments.add(new JavaDocSegment(ArrayOfBlock.get(i), ArrayOfSignature.get(i), ArrayOfNamespace.get(i)));
+            while (k < ArrayOfDateTime.size()) {
+                if (ArrayOfNameOfCommits.get(i).equals(ArrayOfNameOfCommits.get(k)) &&
+                        (ArrayOfDateTime.get(i).equals(ArrayOfDateTime.get(k)))) {
+                    JavaDocSegments.add(new JavaDocSegment(ArrayOfBlock.get(k), ArrayOfSignature.get(k), ArrayOfNamespace.get(k)));
+                    k++;
+                } else {
+                    k++;
+                }
+            }
+            DocCommit segment = new DocCommit(JavaDocSegments, ArrayOfNameOfCommits.get(i), ArrayOfDateTime.get(i));
+            theLock.lock();
+            DocSegments.add(segment);
+            theLock.unlock();
+            i++;
         }
     }
 
@@ -102,6 +129,7 @@ public class MainOfAnalyze {
                     e.printStackTrace();
                 }
             });
+            count++;
         }
 
     }
