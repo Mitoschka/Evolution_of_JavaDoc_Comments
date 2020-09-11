@@ -21,11 +21,6 @@ public class MainOfAnalyze {
     public static int MinCommentSize = 10;
 
     public static ArrayList DocSegments = new ArrayList<>();
-    public static ArrayList<String> ArrayOfNameOfCommits = new ArrayList<>();
-    public static ArrayList<String> ArrayOfDateTime = new ArrayList<>();
-    public static ArrayList<String> ArrayOfBlock = new ArrayList<>();
-    public static ArrayList<String> ArrayOfSignature = new ArrayList<>();
-    public static ArrayList<String> ArrayOfNamespace = new ArrayList<>();
 
     public static int count = 0;
 
@@ -41,13 +36,8 @@ public class MainOfAnalyze {
             nameOfOutJson = FolderCreate.folder + args + ".json";
             String response = json.toJson(comments);
             outJson.println(response);
-            while ((DocSegments.size() != 0) || (ArrayOfNameOfCommits.size() != 0)) {
+            while (DocSegments.size() != 0) {
                 DocSegments.clear();
-                ArrayOfNameOfCommits.clear();
-                ArrayOfDateTime.clear();
-                ArrayOfBlock.clear();
-                ArrayOfNamespace.clear();
-                ArrayOfSignature.clear();
             }
         } catch (Exception e) {
             out.println(e.getMessage());
@@ -60,7 +50,6 @@ public class MainOfAnalyze {
             //Парсим все java-исходники из указанной директории в список DocSegments - типа JavaDocSegment
             ParseDirectory(FolderCreate.file + args);
 
-            Analyze();
             //PrintDocsReport распечатывает в PlainComments.txt извлеченные комментарии
             PrintDocsReport(DocSegments, args);
 
@@ -72,50 +61,23 @@ public class MainOfAnalyze {
     }
 
 
-    public static void ParseJavadoc(String block, String date, String signature, String nameOfCommits, String namespace) throws IOException {
+    public static void ParseJavadoc(String block, String signature, String namespace, String path, ArrayList<JavaDocSegment> JavaDocSegments) throws IOException {
         if (block.contains("{@inheritDoc}")) return;
         if (signature.contains("package")) return;
 
         if (signature != null && block.length() > 0) {
             ArrayList<String> sents = Ngrams.sanitiseToWords(block);
             if (sents.size() >= MinCommentSize) {
-                ArrayOfNameOfCommits.add(nameOfCommits);
-                ArrayOfDateTime.add(date);
-                ArrayOfBlock.add(block);
-                ArrayOfNamespace.add(namespace);
-                ArrayOfSignature.add(signature);
+                JavaDocSegments.add(new JavaDocSegment(block, signature, namespace, path));
             }
         }
     }
-
-    public static void Analyze() {
-        int i = 0;
-        while (i < ArrayOfNameOfCommits.size()) {
-            ArrayList<JavaDocSegment> JavaDocSegments = new ArrayList<>();
-            int k = 1;
-            JavaDocSegments.add(new JavaDocSegment(ArrayOfBlock.get(i), ArrayOfSignature.get(i), ArrayOfNamespace.get(i)));
-            while (k < ArrayOfDateTime.size()) {
-                if (ArrayOfNameOfCommits.get(i).equals(ArrayOfNameOfCommits.get(k)) &&
-                        (ArrayOfDateTime.get(i).equals(ArrayOfDateTime.get(k)))) {
-                    JavaDocSegments.add(new JavaDocSegment(ArrayOfBlock.get(k), ArrayOfSignature.get(k), ArrayOfNamespace.get(k)));
-                    k++;
-                } else {
-                    k++;
-                }
-            }
-            DocCommit segment = new DocCommit(JavaDocSegments, ArrayOfNameOfCommits.get(i), ArrayOfDateTime.get(i));
-            theLock.lock();
-            DocSegments.add(segment);
-            theLock.unlock();
-            i++;
-        }
-    }
-
 
     public static void ParseDirectory(String Path) throws IOException {
+        ArrayList<JavaDocSegment> JavaDocSegments = new ArrayList<>();
         File path = new File(Path);
         if (path.isFile())
-            ParseFile(new File(Path));
+            ParseFile(new File(Path), JavaDocSegments);
         else {
             ArrayList<File> files = new ArrayList<>();
             new com.company.DirExplorer((level, fpath, file) -> fpath.endsWith(".java"), (level, fpath, file) -> {
@@ -124,18 +86,22 @@ public class MainOfAnalyze {
 
             files.forEach(file -> {
                 try {
-                    ParseFile(file);
+                    ParseFile(file, JavaDocSegments);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
+            DocCommit segment = new DocCommit(JavaDocSegments, Connect.arraylistOfCommits.get(count), Connect.arraylistOfDate.get(count));
+            theLock.lock();
+            DocSegments.add(segment);
+            theLock.unlock();
             count++;
         }
 
     }
 
 
-    public static void ParseFile(File file) throws IOException {
+    public static void ParseFile(File file, ArrayList<JavaDocSegment> JavaDocSegments) throws IOException {
         if (file.getAbsolutePath().contains(".java")) {
             byte[] encodedContent = Files.readAllBytes(file.toPath());
             try {
@@ -146,7 +112,7 @@ public class MainOfAnalyze {
                     if (matcher.group(matcher.groupCount()) == null)
                         namespace = matcher.group(1);
                     else {
-                        ParseJavadoc(matcher.group(2).intern(), Connect.arraylistOfDate.get(count), matcher.group(matcher.groupCount()), Connect.arraylistOfCommits.get(count), namespace);
+                        ParseJavadoc(matcher.group(2).intern(), matcher.group(matcher.groupCount()), namespace, file.getAbsolutePath(), JavaDocSegments);
                     }
                 }
             } catch (Exception e) {

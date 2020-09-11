@@ -12,12 +12,10 @@ import java.util.LinkedList;
 public class Analyze {
 
     public static LinkedList<DocCommit> ArrayOfCommits = new LinkedList<>();
-    public static DocCommit ArrayOfCommitsSegments;
     public static LinkedList<DocCommit> ArrayOfCommitsSegmentsElement = new LinkedList<>();
     public static LinkedList<LinkedList<DocCommit>> ArrayOfLog = new LinkedList<>();
     public static DocCommit[] docCommits;
 
-    public static int count = 0;
     public static String zipFileName;
     public static Boolean isUnZip = false;
     public static File file1;
@@ -26,7 +24,7 @@ public class Analyze {
     public static long secondSizeInBytes = -3;
 
 
-    public static void AnalyzeDirectory(String Path) {
+    public static void AnalyzeDirectory(String Path) throws InterruptedException {
         File path = new File(Path);
         if (path.isFile())
             AnalyzeFile(new File(Path));
@@ -74,13 +72,12 @@ public class Analyze {
             JsonReader reader = new JsonReader(new StringReader(jsonToString));
             reader.setLenient(true);
             docCommits = gson.fromJson(reader, DocCommit[].class);
-            ArrayOfCommits.add(docCommits[count]);
-            count++;
-            file1.delete();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            file1.delete();
+            ArrayOfCommits.add(docCommits[0]);
+
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            file1.delete();
         }
     }
 
@@ -88,31 +85,22 @@ public class Analyze {
         return new String(Files.readAllBytes(Paths.get(file)));
     }
 
-    public static void AnalyzeElements() {
+    public static void AnalyzeElements() throws InterruptedException {
         int countOfElementThatWillBeComparedWithTheRest = 0;
         while (countOfElementThatWillBeComparedWithTheRest < ArrayOfCommits.size()) {
-            int i = 0;
-            int j = 0;
-            while (j < ArrayOfCommits.size()) {
-                int k = 0;
-                while (k < ArrayOfCommits.get(i).DocSegments.size()) {
-                    ArrayList<JavaDocSegment> javaDocSegments = new ArrayList<>();
-                    javaDocSegments.add(ArrayOfCommits.get(i).DocSegments.get(k));
-                    ArrayOfCommitsSegments = new DocCommit(javaDocSegments, ArrayOfCommits.get(i).Name, ArrayOfCommits.get(i).DateTime);
-                    if (!ArrayOfCommitsSegmentsElement.contains(ArrayOfCommits.get(i).Name) &&
-                            (!ArrayOfCommitsSegmentsElement.contains(ArrayOfCommits.get(i).DateTime) &&
-                                    (!ArrayOfCommitsSegmentsElement.contains(ArrayOfCommits.get(i).DocSegments.get(k).Signature) &&
-                                            (!ArrayOfCommitsSegmentsElement.contains(ArrayOfCommits.get(i).DocSegments.get(k).Namespace))))) {
-                        ArrayOfCommitsSegmentsElement.add(ArrayOfCommitsSegments);
-                        ArrayOfCommits.get(i).DocSegments.remove(k);
-                    }
-                    k++;
-                }
-                i++;
-                j++;
+            int k = 0;
+            while (k < ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.size()) {
+                ArrayList<JavaDocSegment> javaDocSegments = new ArrayList<>();
+                javaDocSegments.add(ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.get(k));
+                DocCommit ArrayOfCommitsSegments = new DocCommit(javaDocSegments, ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).Name, ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DateTime);
+                ArrayOfCommitsSegmentsElement.add(ArrayOfCommitsSegments);
+                ArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.remove(k);
+                k++;
             }
             ArrayOfCommits.remove(countOfElementThatWillBeComparedWithTheRest);
+            System.out.println("\nThere are still " + ArrayOfCommits.size() + " files left\n");
         }
+
         int countOfElementThatWillBeComparedWithTheRestOfElement = 0;
         while (countOfElementThatWillBeComparedWithTheRestOfElement < ArrayOfCommitsSegmentsElement.size()) {
             LinkedList<DocCommit> ArrayOfDuplication = new LinkedList<>();
@@ -141,17 +129,23 @@ public class Analyze {
 
     public static LinkedList<DocCommit> CheckUniqueElementInArrayOfLog(LinkedList<DocCommit> arrayOfDuplication) {
         int i = 0;
-            while (i < arrayOfDuplication.size()) {
-                int countOfUniqueElement = 1 + i;
-                while (arrayOfDuplication.size() > countOfUniqueElement) {
-                    if (arrayOfDuplication.get(i).DocSegments.get(0).Content.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Content)) {
-                        arrayOfDuplication.remove(countOfUniqueElement);
-                    } else {
-                        countOfUniqueElement++;
-                    }
+        while (i < arrayOfDuplication.size()) {
+            int countOfUniqueElement = 1 + i;
+            while (arrayOfDuplication.size() > countOfUniqueElement) {
+                if (arrayOfDuplication.get(i).DocSegments.get(0).Content.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Content)) {
+                    arrayOfDuplication.remove(countOfUniqueElement);
+                } else if (!arrayOfDuplication.get(i).DocSegments.get(0).Content.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Content) &&
+                        (arrayOfDuplication.get(i).DocSegments.get(0).Namespace.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Namespace) &&
+                                (arrayOfDuplication.get(i).DocSegments.get(0).Signature.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Signature) &&
+                                        (arrayOfDuplication.get(i).DateTime.equals(arrayOfDuplication.get(countOfUniqueElement).DateTime) &&
+                                                (arrayOfDuplication.get(i).Name.equals(arrayOfDuplication.get(countOfUniqueElement).Name)))))) {
+                    arrayOfDuplication.remove(countOfUniqueElement);
+                } else {
+                    countOfUniqueElement++;
                 }
-                i++;
             }
+            i++;
+        }
         return arrayOfDuplication;
     }
 }
