@@ -35,6 +35,9 @@ public class Download implements Runnable {
                 bout.close();
                 in.close();
                 UnZip.UnZip(out);
+                while (out.exists()) {
+                    out.delete();
+                }
             } else {
                 throw new InterruptedException();
             }

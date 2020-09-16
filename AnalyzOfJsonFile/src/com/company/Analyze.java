@@ -23,12 +23,6 @@ public class Analyze {
     public static long firstSizeInBytes = -1;
     public static long secondSizeInBytes = -3;
 
-    public static Thread thread;
-
-    public static boolean running;
-
-    public static int countOfElementThatWillBeComparedWithTheRestOfElement = 0;
-
     public static void AnalyzeDirectory(String Path) throws InterruptedException {
         File path = new File(Path);
         if (path.isFile())
@@ -106,47 +100,20 @@ public class Analyze {
             System.out.println("\nThere are still " + ArrayOfCommits.size() + " files left\n");
         }
 
-        countOfElementThatWillBeComparedWithTheRestOfElement = 0;
+        int countOfElementThatWillBeComparedWithTheRestOfElement = 0;
         while (countOfElementThatWillBeComparedWithTheRestOfElement < ArrayOfCommitsSegmentsElement.size()) {
             LinkedList<DocCommit> ArrayOfDuplication = new LinkedList<>();
             ArrayOfDuplication.add(ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement));
-
             int i = 1;
-            while (i < ArrayOfCommitsSegmentsElement.size() / 2) {
+            while (i < ArrayOfCommitsSegmentsElement.size()) {
                 if (ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement).DocSegments.get(0).Signature.equals(ArrayOfCommitsSegmentsElement.get(i).DocSegments.get(0).Signature)
-                        && (ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement).DocSegments.get(0).Namespace.equals(ArrayOfCommitsSegmentsElement.get(i).DocSegments.get(0).Namespace))
-                        && (ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement).DocSegments.get(0).Location.equals(ArrayOfCommitsSegmentsElement.get(i).DocSegments.get(0).Location))) {
+                        && (ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement).DocSegments.get(0).Namespace.equals(ArrayOfCommitsSegmentsElement.get(i).DocSegments.get(0).Namespace)
+                        && (ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement).DocSegments.get(0).Location.equals(ArrayOfCommitsSegmentsElement.get(i).DocSegments.get(0).Location)))) {
                     ArrayOfDuplication.add(ArrayOfCommitsSegmentsElement.get(i));
                     ArrayOfCommitsSegmentsElement.remove(i);
                 }
                 i++;
             }
-
-            thread = new Thread(new Runnable() {
-                public void run() {
-                    while (running) {
-                        try {
-                            int i = ArrayOfCommitsSegmentsElement.size() / 2;
-                            while (i < ArrayOfCommitsSegmentsElement.size()) {
-                                if (ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement).DocSegments.get(0).Signature.equals(ArrayOfCommitsSegmentsElement.get(i).DocSegments.get(0).Signature)
-                                        && (ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement).DocSegments.get(0).Namespace.equals(ArrayOfCommitsSegmentsElement.get(i).DocSegments.get(0).Namespace))
-                                        && (ArrayOfCommitsSegmentsElement.get(countOfElementThatWillBeComparedWithTheRestOfElement).DocSegments.get(0).Location.equals(ArrayOfCommitsSegmentsElement.get(i).DocSegments.get(0).Location))) {
-                                    ArrayOfCommitsSegmentsElement.remove(i);
-                                }
-                                i++;
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-
-            thread.join();
-            while (thread.isAlive()) {
-                Thread.sleep(1000);
-            }
-
             CheckUniqueElementInArrayOfLog(ArrayOfDuplication);
             if (ArrayOfDuplication.size() > 1) {
                 ArrayOfLog.add(ArrayOfDuplication);
@@ -158,22 +125,13 @@ public class Analyze {
         }
     }
 
+
     public static LinkedList<DocCommit> CheckUniqueElementInArrayOfLog(LinkedList<DocCommit> arrayOfDuplication) {
         int i = 0;
         while (i < arrayOfDuplication.size()) {
             int countOfUniqueElement = 1 + i;
             while (arrayOfDuplication.size() > countOfUniqueElement) {
-                if (arrayOfDuplication.get(i).DocSegments.get(0).Content.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Content) &&
-                        (arrayOfDuplication.get(i).DocSegments.get(0).Namespace.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Namespace) &&
-                                (arrayOfDuplication.get(i).DocSegments.get(0).Signature.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Signature) &&
-                                        (arrayOfDuplication.get(i).DocSegments.get(0).Location.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Location))))) {
-                    arrayOfDuplication.remove(countOfUniqueElement);
-                } else if (!arrayOfDuplication.get(i).DocSegments.get(0).Content.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Content) &&
-                        (arrayOfDuplication.get(i).DocSegments.get(0).Namespace.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Namespace) &&
-                                (arrayOfDuplication.get(i).DocSegments.get(0).Signature.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Signature) &&
-                                        (arrayOfDuplication.get(i).DocSegments.get(0).Location.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Location) &&
-                                                (arrayOfDuplication.get(i).DateTime.equals(arrayOfDuplication.get(countOfUniqueElement).DateTime) &&
-                                                        (arrayOfDuplication.get(i).Name.equals(arrayOfDuplication.get(countOfUniqueElement).Name))))))) {
+                if (arrayOfDuplication.get(i).DocSegments.get(0).Content.equals(arrayOfDuplication.get(countOfUniqueElement).DocSegments.get(0).Content)) {
                     arrayOfDuplication.remove(countOfUniqueElement);
                 } else {
                     countOfUniqueElement++;

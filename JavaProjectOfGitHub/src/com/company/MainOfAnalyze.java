@@ -22,7 +22,6 @@ public class MainOfAnalyze {
 
     public static ArrayList DocSegments = new ArrayList<>();
 
-    public static int count = 0;
 
     public static String nameOfOutJson;
 
@@ -46,9 +45,8 @@ public class MainOfAnalyze {
 
     public static void mainOfAnalyze(String args) {
         try {
-
             //Парсим все java-исходники из указанной директории в список DocSegments - типа JavaDocSegment
-            ParseDirectory(FolderCreate.file + args);
+            ParseDirectory(FolderCreate.folder + args);
 
             //PrintDocsReport распечатывает в PlainComments.txt извлеченные комментарии
             PrintDocsReport(DocSegments, args);
@@ -91,11 +89,10 @@ public class MainOfAnalyze {
                     e.printStackTrace();
                 }
             });
-            DocCommit segment = new DocCommit(JavaDocSegments, Connect.arraylistOfCommits.get(count), Connect.arraylistOfDate.get(count));
+            DocCommit segment = new DocCommit(JavaDocSegments, Connect.arraylistOfCommits.get(0), Connect.arraylistOfDate.get(0));
             theLock.lock();
             DocSegments.add(segment);
             theLock.unlock();
-            count++;
         }
 
     }

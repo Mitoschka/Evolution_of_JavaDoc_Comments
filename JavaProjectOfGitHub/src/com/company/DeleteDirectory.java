@@ -6,11 +6,11 @@ import java.io.IOException;
 public class DeleteDirectory
 
 {
-    private static final String SRC__FOLDER = Main.PuthToFile + FolderCreate.file.getName();
+    private static String SRC__FOLDER;
 
     public static void DeleteDirectory()
     {
-
+        String SRC__FOLDER = Main.PuthToFile + FolderCreate.folder.getName() + UnZip.arraylist.get(0);
         File directory = new File(SRC__FOLDER);
 
         //make sure directory exists

@@ -17,13 +17,15 @@ public class Connect {
     public static List<String> arraylistOfCommits = new ArrayList();
     public static List<String> arraylistOfDate = new ArrayList();
     public static File out;
+    private File fileToDelete;
+
+    private boolean isFirst = false;
 
     public static long firstSizeInBytes = -1;
     public static long secondSizeInBytes = -6;
 
     protected void Connect(String newString, String link) throws Exception, ConnectException {
 
-        List<String> arrlist = new ArrayList();
         HttpURLConnection httpURLConnection = (HttpURLConnection) (new URL(newString)).openConnection();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
 
@@ -33,47 +35,54 @@ public class Connect {
         }
 
         bufferedReader.close();
-        int i = 0;
-        Arrays.stream(line.split("\"sha\":\"")).skip(1L).map((L) -> {
+        Arrays.stream(line.split("\\[\\{\"sha\":\"")).skip(1L).map((L) -> {
             return L.split("\"")[0];
         }).forEach((L) -> {
-            arrlist.add(L);
+            if (!isFirst) {
+                arraylistOfCommits.add(L);
+                isFirst = true;
+            }
+        });
+        Arrays.stream(line.split("]},\\{\"sha\":\"")).skip(1L).map((L) -> {
+            return L.split("\"")[0];
+        }).forEach((L) -> {
             if (!arraylistOfCommits.contains(L)) {
                 arraylistOfCommits.add(L);
             }
         });
         Arrays.stream(line.split("\"date\":\"")).skip(1L).map((G) -> {
             return G.split("\"")[0];
-        }).forEach(arraylistOfDate::add);
+        }).forEach((G) -> {
+            if (!arraylistOfDate.contains(G)) {
+                arraylistOfDate.add(G);
+            }
+        });
 
-
-        while (i != arrlist.size()) {
-            String links = link + "/archive/" + (String) arrlist.get(i) + ".zip";
-            out = new File(Main.PuthToFile + FolderCreate.folderName + "\\" + arrlist.get(i) + ".zip");
+        while (0 < arraylistOfCommits.size()) {
+            String links = link + "/archive/" + arraylistOfCommits.get(0).toString() + ".zip";
+            out = new File(Main.PuthToFile + FolderCreate.folderName + "\\" + arraylistOfCommits.get(0) + ".zip");
             out.deleteOnExit();
-            ++i;
             current = new Thread(new Download(links, out));
             current.start();
-            int countOfExists = 0;
-            int countOfCurrent = 0;
-            while (!current.isInterrupted() && countOfCurrent < 2) {
-                try {
-                    while (!out.exists() && countOfExists < 100) {
-                        Thread.sleep(100);
-                        countOfExists++;
-                    }
-                    while (firstSizeInBytes != secondSizeInBytes) {
-                        firstSizeInBytes = out.length();
-                        Thread.sleep(50);
-                        secondSizeInBytes = out.length();
-                    }
-                    Connect.current.interrupt();
-                } catch (InterruptedException exception1) {
-                    exception1.printStackTrace();
-                }
-                Thread.sleep(50);
-                countOfCurrent++;
+            current.join();
+            MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
+            mainOfAnalyze.mainOfAnalyze(UnZip.arraylist.get(0));
+            fileToDelete = new File(FolderCreate.folder + UnZip.arraylist.get(0));
+            ZipFile.Zip();
+            ZipFile.jsonToDelete.delete();
+            while (fileToDelete.exists()) {
+                DeleteDirectory.DeleteDirectory();
             }
+            if (ZipFile.zipToDelete.length() < 400) {
+                ZipFile.zipToDelete.delete();
+                while (ZipFile.zipToDelete.exists()) {
+                    Thread.sleep(1000);
+                    ZipFile.zipToDelete.delete();
+                }
+            }
+            UnZip.arraylist.remove(0);
+            arraylistOfDate.remove(0);
+            arraylistOfCommits.remove(0);
         }
     }
 }
