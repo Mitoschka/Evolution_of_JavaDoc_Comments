@@ -1,26 +1,26 @@
-
 package com.company;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class CreateLog {
 
     public static void CreateLogFile(String args) {
         try (FileWriter writer = new FileWriter(args + "/Log.txt", false)) {
-            writer.write("\t\tFound " + Analyze.ArrayOfLog.size() + " API elements with modified comments.\n\n\n");
-            int i = 0;
-
-            while (Analyze.ArrayOfLog.size() > i) {
-                int j = 0;
-                writer.write(i + 1 + " API element" + "  {\n");
-                while (Analyze.ArrayOfLog.get(i).size() > j) {
-                    writer.write("\n     Item signature #" + (j + 1) + "\n\n");
-                    writer.write("\t> " + Analyze.ArrayOfLog.get(i).get(j).Name + " || " + Analyze.ArrayOfLog.get(i).get(j).DateTime + " || " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.get(0).Signature + " || " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.get(0).Namespace + " || " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.get(0).Location  + "\n\n");
-                    writer.write("\t> " + Analyze.ArrayOfLog.get(i).get(j).DocSegments.get(0).Content + "\n\n");
+            writer.write("\t\tFound " + Analyze.dictionaryToLog.size() + " API elements with modified comments.\n\n\n");
+            int i = 1;
+            for (Map.Entry<List<String>, ArrayList<DocCommit>> evolution : Analyze.dictionaryToLog.entrySet()) {
+                writer.write(i + " API element" + "  {\n");
+                int j = 1;
+                for (DocCommit element: evolution.getValue()) {
+                    writer.write("\n     Item signature #" + j + "\n\n");
+                    writer.write("\t> " + evolution.getValue().get(0).Name + " || " + evolution.getValue().get(0).DateTime + " || " + evolution.getKey().get(0) + " || " + evolution.getKey().get(1) + " || " + evolution.getKey().get(2)  + "\n\n");
+                    writer.write("\t> " + evolution.getValue().get(0).DocSegments.get(0).Content + "\n\n");
                     writer.write("\t--------------------------------\n\n");
                     j++;
                 }
-                writer.write("}\n");
                 i++;
             }
         } catch (IOException e) {
