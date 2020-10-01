@@ -13,14 +13,15 @@ public class CreateLog {
             int i = 1;
             for (Map.Entry<List<String>, ArrayList<DocCommit>> evolution : Analyze.dictionaryToLog.entrySet()) {
                 writer.write(i + " API element" + "  {\n");
-                int j = 1;
+                int j = 0;
                 for (DocCommit element: evolution.getValue()) {
-                    writer.write("\n     Item signature #" + j + "\n\n");
-                    writer.write("\t> " + evolution.getValue().get(0).Name + " || " + evolution.getValue().get(0).DateTime + " || " + evolution.getKey().get(0) + " || " + evolution.getKey().get(1) + " || " + evolution.getKey().get(2)  + "\n\n");
-                    writer.write("\t> " + evolution.getValue().get(0).DocSegments.get(0).Content + "\n\n");
-                    writer.write("\t--------------------------------\n\n");
+                    writer.write("\n     Item signature #" + (1 + j) + "\n\n");
+                    writer.write("\t> " + evolution.getValue().get(j).Name + " || " + evolution.getValue().get(j).DateTime + " || " + evolution.getKey().get(0) + " || " + evolution.getKey().get(1) + " || " + evolution.getKey().get(2)  + "\n\n");
+                    writer.write("\t> " + evolution.getValue().get(j).DocSegments.get(0).Content + "\n\n");
+                    writer.write("\t--------------------------------\n");
                     j++;
                 }
+                writer.write("}\n\n");
                 i++;
             }
         } catch (IOException e) {

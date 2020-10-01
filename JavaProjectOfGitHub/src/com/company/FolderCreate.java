@@ -18,13 +18,13 @@ public class FolderCreate {
         folderName = "Project Folder(1)";
 
 
-        for (Path path = Paths.get(Main.PuthToFile + folderName); Files.exists(path, new LinkOption[0]); ++count) {
+        for (Path path = Paths.get(Main.PathToFile + folderName); Files.exists(path, new LinkOption[0]); ++count) {
 
             folderName = "Project Folder(" + count + ")";
-            path = Paths.get(Main.PuthToFile + folderName);
+            path = Paths.get(Main.PathToFile + folderName);
         }
 
-        folder = new File(Main.PuthToFile + folderName);
+        folder = new File(Main.PathToFile + folderName);
 
         folder.mkdir();
     }

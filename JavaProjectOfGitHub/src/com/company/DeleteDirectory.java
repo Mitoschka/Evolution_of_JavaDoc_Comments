@@ -10,7 +10,7 @@ public class DeleteDirectory
 
     public static void DeleteDirectory()
     {
-        String SRC__FOLDER = Main.PuthToFile + FolderCreate.folder.getName() + UnZip.arraylist.get(0);
+        String SRC__FOLDER = Main.PathToFile + FolderCreate.folder.getName() + UnZip.arraylist.get(0);
         File directory = new File(SRC__FOLDER);
 
         //make sure directory exists

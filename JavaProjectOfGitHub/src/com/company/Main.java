@@ -7,7 +7,7 @@ import java.net.MalformedURLException;
 
 public class Main {
 
-    public static String PuthToFile = "D:\\";
+    public static String PathToFile = "D:\\";
 
     public static void main(String[] args) throws Exception {
 

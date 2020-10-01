@@ -54,13 +54,14 @@ public class Connect {
             return G.split("\"")[0];
         }).forEach((G) -> {
             if (!arraylistOfDate.contains(G)) {
-                arraylistOfDate.add(G);
+                String time = G.replace("T", " ").replace("Z", "");
+                arraylistOfDate.add(time);
             }
         });
 
         while (0 < arraylistOfCommits.size()) {
             String links = link + "/archive/" + arraylistOfCommits.get(0).toString() + ".zip";
-            out = new File(Main.PuthToFile + FolderCreate.folderName + "\\" + arraylistOfCommits.get(0) + ".zip");
+            out = new File(Main.PathToFile + FolderCreate.folderName + "\\" + arraylistOfCommits.get(0) + ".zip");
             out.deleteOnExit();
             current = new Thread(new Download(links, out));
             current.start();
