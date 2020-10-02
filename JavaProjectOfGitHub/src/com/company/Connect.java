@@ -17,12 +17,9 @@ public class Connect {
     public static List<String> arraylistOfCommits = new ArrayList();
     public static List<String> arraylistOfDate = new ArrayList();
     public static File out;
-    private File fileToDelete;
+    public static File fileToDelete;
 
     private boolean isFirst = false;
-
-    public static long firstSizeInBytes = -1;
-    public static long secondSizeInBytes = -6;
 
     protected void Connect(String newString, String link) throws Exception, ConnectException {
 
@@ -59,9 +56,20 @@ public class Connect {
             }
         });
 
+        for (String downloaded : CheckForDownloadedData.arrayOfDownloadedFiles) {
+            for (String commits : arraylistOfCommits) {
+                if (downloaded == commits) {
+                    arraylistOfDate.remove(arraylistOfCommits.indexOf(commits));
+                    arraylistOfCommits.remove(commits);
+                    CheckForDownloadedData.arrayOfDownloadedFiles.remove(downloaded);
+                }
+            }
+        }
+
+
         while (0 < arraylistOfCommits.size()) {
-            String links = link + "/archive/" + arraylistOfCommits.get(0).toString() + ".zip";
-            out = new File(Main.PathToFile + FolderCreate.folderName + "\\" + arraylistOfCommits.get(0) + ".zip");
+            String links = link + "/archive/" + arraylistOfCommits.get(0) + ".zip";
+            out = new File(Main.pathToFile + Main.folderName + "\\" + arraylistOfCommits.get(0) + ".zip");
             out.deleteOnExit();
             current = new Thread(new Download(links, out));
             current.start();
@@ -77,7 +85,7 @@ public class Connect {
             if (ZipFile.zipToDelete.length() < 400) {
                 ZipFile.zipToDelete.delete();
                 while (ZipFile.zipToDelete.exists()) {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                     ZipFile.zipToDelete.delete();
                 }
             }

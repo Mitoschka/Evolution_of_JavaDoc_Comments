@@ -89,21 +89,18 @@ public class Analyze {
     }
 
     public static void DateSort() {
-        ArrayList<String> dateString=new ArrayList<String>();
-        for (DocCommit element:ArrayOfCommits) {
+        ArrayList<String> dateString = new ArrayList<String>();
+        for (DocCommit element : ArrayOfCommits) {
             dateString.add(element.DateTime);
         }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            Collections.sort(dateString, Comparator.comparing(s -> LocalDateTime.parse(s, formatter)));
-        while (dateString.size() != 0)
-        {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Collections.sort(dateString, Comparator.comparing(s -> LocalDateTime.parse(s, formatter)));
+        while (dateString.size() != 0) {
             int i = 0;
-            while(!ArrayOfCommits.get(i).DateTime.equals(dateString.get(0)))
-            {
+            while (!ArrayOfCommits.get(i).DateTime.equals(dateString.get(0))) {
                 i++;
             }
-            if (ArrayOfCommits.get(i).DateTime.equals(dateString.get(0)))
-            {
+            if (ArrayOfCommits.get(i).DateTime.equals(dateString.get(0))) {
                 SortedArrayOfCommits.add(ArrayOfCommits.get(i));
                 dateString.remove(0);
             }
@@ -122,12 +119,10 @@ public class Analyze {
                 DocCommit ArrayOfCommitsSegments = new DocCommit(javaDocSegments, SortedArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).Name, SortedArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DateTime);
                 ArrayList<DocCommit> docCommitArrayList = new ArrayList<>();
                 docCommitArrayList.add(ArrayOfCommitsSegments);
-                if (!dictionary.containsKey(key))
-                {
+                if (!dictionary.containsKey(key)) {
                     dictionary.put(key, docCommitArrayList);
                 } else {
-                    if (!dictionary.get(key).get(0).DocSegments.get(0).Content.equals(SortedArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.get(k).Content))
-                    {
+                    if (!dictionary.get(key).get(0).DocSegments.get(0).Content.equals(SortedArrayOfCommits.get(countOfElementThatWillBeComparedWithTheRest).DocSegments.get(k).Content)) {
                         dictionary.get(key).add(0, ArrayOfCommitsSegments);
                     }
                 }
@@ -137,14 +132,13 @@ public class Analyze {
             SortedArrayOfCommits.remove(countOfElementThatWillBeComparedWithTheRest);
             System.out.println("\nThere are still " + SortedArrayOfCommits.size() + " files left\n");
         }
-            for (Map.Entry<List<String>, ArrayList<DocCommit>> evolution : dictionary.entrySet()) {
-                if (evolution.getValue().size() > 1)
-                {
-                    List<String> key = evolution.getKey();
-                    ArrayList<DocCommit> value = evolution.getValue();
-                    dictionaryToLog.put(key, value);
-                }
+        for (Map.Entry<List<String>, ArrayList<DocCommit>> evolution : dictionary.entrySet()) {
+            if (evolution.getValue().size() > 1) {
+                List<String> key = evolution.getKey();
+                ArrayList<DocCommit> value = evolution.getValue();
+                dictionaryToLog.put(key, value);
             }
-            dictionary.clear();
         }
+        dictionary.clear();
     }
+}

@@ -7,15 +7,18 @@ import java.net.MalformedURLException;
 
 public class Main {
 
-    public static String PathToFile = "D:\\";
+    public static String pathToFile = "C:\\";
+    public static String folderName = "JSON Folder";
 
     public static void main(String[] args) throws Exception {
 
+        new FolderCreate();
+        String ext = ".json.zip";
+        CheckForDownloadedData.FindFiles(ext);
         System.out.print("Input URL of GitHub: ");
         String link = args[0];
         System.out.print("Please, wait... ");
         boolean isOkay = false;
-        new FolderCreate();
         int count = 1;
         while (true) {
             try {
