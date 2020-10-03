@@ -19,7 +19,7 @@ public class DeleteDirectory {
 
         } else {
             try {
-                delete(directory, safe);
+                delete(directory, safe, SRC__FOLDER);
             } catch (IOException e) {
                 e.printStackTrace();
                 System.exit(0);
@@ -29,19 +29,17 @@ public class DeleteDirectory {
         System.out.println("Done");
     }
 
-    public static void delete(File file, String safe)
+    public static void delete(File file, String safe, String SRC__FOLDER)
             throws IOException {
-
 
             if (!isSafe) {
                 if (safe.equals("\\")) {
                     return;
                 } else {
-                    conditionForSafe = !file.getAbsolutePath().contains(safe) && !isSafe;
+                    conditionForSafe = !file.getAbsolutePath().contains(SRC__FOLDER + safe) && !isSafe;
                 }
             } else {
-                    conditionForSafe = file.getAbsolutePath().contains(safe) && isSafe;
-
+                    conditionForSafe = true;
             }
 
 
@@ -65,7 +63,7 @@ public class DeleteDirectory {
                     File fileDelete = new File(file, temp);
 
                     //recursive delete
-                    delete(fileDelete, safe);
+                    delete(fileDelete, safe, SRC__FOLDER);
                 }
 
                 //check the directory again, if empty then delete it
