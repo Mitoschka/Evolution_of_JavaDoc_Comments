@@ -21,7 +21,7 @@ public class Connect {
 
     private boolean isFirst = false;
 
-    protected void Connect(String newString, String link) throws Exception, ConnectException {
+    protected void Connect(String newString, String link, String args) throws Exception, ConnectException {
 
         HttpURLConnection httpURLConnection = (HttpURLConnection) (new URL(newString)).openConnection();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
@@ -74,13 +74,16 @@ public class Connect {
             current = new Thread(new Download(links, out));
             current.start();
             current.join();
+            DeleteDirectory.isSafe = false;
+            DeleteDirectory.DeleteDirectory(Main.pathToFile + FolderCreate.folder.getName() + UnZip.arraylist.get(0), args);
+            DeleteDirectory.isSafe = true;
             MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
             mainOfAnalyze.mainOfAnalyze(UnZip.arraylist.get(0));
             fileToDelete = new File(FolderCreate.folder + UnZip.arraylist.get(0));
             ZipFile.Zip();
             ZipFile.jsonToDelete.delete();
             while (fileToDelete.exists()) {
-                DeleteDirectory.DeleteDirectory();
+                DeleteDirectory.DeleteDirectory(Main.pathToFile + FolderCreate.folder.getName() + UnZip.arraylist.get(0), args);
             }
             if (ZipFile.zipToDelete.length() < 400) {
                 ZipFile.zipToDelete.delete();

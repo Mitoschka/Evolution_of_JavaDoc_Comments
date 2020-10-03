@@ -38,7 +38,6 @@ public class UnZip {
                                     new File(out.getParent(), entry.getName()))));
                 }
             }
-
             zip.close();
         } catch (IOException e) {
             e.printStackTrace();

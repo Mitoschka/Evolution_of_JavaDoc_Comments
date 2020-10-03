@@ -25,7 +25,7 @@ public class Main {
                 String newString = link.replace("https://github.com/", "https://api.github.com/repos/");
                 newString = newString + "/commits?page=" + count;
                 Connect server = new Connect();
-                server.Connect(newString, link);
+                server.Connect(newString, link, args[1]);
                 count++;
             } catch (MalformedURLException e) {
                 System.out.println("\nOops, there was an error, maybe you entered the wrong link, try again.\n");

@@ -10,9 +10,6 @@ public class CheckForDownloadedData {
     public static void FindFiles(String ext) {
         String SRC__FOLDER = Main.pathToFile + FolderCreate.folder.getName();
         File file = new File(SRC__FOLDER);
-        if (!file.exists()) {
-            return;
-        }
         File[] listFiles = file.listFiles(new MyFileNameFilter(ext));
         if (listFiles.length == 0) {
             return;

@@ -5,8 +5,10 @@ import java.io.IOException;
 
 public class DeleteDirectory {
 
-    public static void DeleteDirectory() {
-        String SRC__FOLDER = Main.pathToFile + FolderCreate.folder.getName() + UnZip.arraylist.get(0);
+    public static boolean isSafe;
+    private static boolean conditionForSafe;
+
+    public static void DeleteDirectory(String SRC__FOLDER, String safe) {
         File directory = new File(SRC__FOLDER);
 
         //make sure directory exists
@@ -16,11 +18,8 @@ public class DeleteDirectory {
             System.exit(0);
 
         } else {
-
             try {
-
-                delete(directory);
-
+                delete(directory, safe);
             } catch (IOException e) {
                 e.printStackTrace();
                 System.exit(0);
@@ -30,17 +29,31 @@ public class DeleteDirectory {
         System.out.println("Done");
     }
 
-    public static void delete(File file)
+    public static void delete(File file, String safe)
             throws IOException {
+
+
+            if (!isSafe) {
+                if (safe.equals("\\")) {
+                    return;
+                } else {
+                    conditionForSafe = !file.getAbsolutePath().contains(safe) && !isSafe;
+                }
+            } else {
+                    conditionForSafe = file.getAbsolutePath().contains(safe) && isSafe;
+
+            }
+
 
         if (file.isDirectory()) {
 
             //directory is empty, then delete it
             if (file.list().length == 0) {
-
-                file.delete();
-                System.out.println("Directory is deleted : "
-                        + file.getAbsolutePath() + "\n");
+                if (conditionForSafe) {
+                    file.delete();
+                    System.out.println("Directory is deleted : "
+                            + file.getAbsolutePath() + "\n");
+                }
 
             } else {
 
@@ -52,21 +65,25 @@ public class DeleteDirectory {
                     File fileDelete = new File(file, temp);
 
                     //recursive delete
-                    delete(fileDelete);
+                    delete(fileDelete, safe);
                 }
 
                 //check the directory again, if empty then delete it
                 if (file.list().length == 0) {
-                    file.delete();
-                    System.out.println("Directory is deleted : "
-                            + file.getAbsolutePath() + "\n");
+                    if (conditionForSafe) {
+                        file.delete();
+                        System.out.println("Directory is deleted : "
+                                + file.getAbsolutePath() + "\n");
+                    }
                 }
             }
 
         } else {
             //if file, then delete it
-            file.delete();
-            System.out.println("File is deleted : " + file.getAbsolutePath() + "\n");
+            if (conditionForSafe) {
+                file.delete();
+                System.out.println("File is deleted : " + file.getAbsolutePath() + "\n");
+            }
         }
     }
 }

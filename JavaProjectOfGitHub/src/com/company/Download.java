@@ -10,6 +10,7 @@ public class Download implements Runnable {
 
     private final String link;
     private final File out;
+
     private static int i = CheckForDownloadedData.arrayOfDownloadedFiles.size();
 
     protected Download(String link, File out) {
