@@ -35,7 +35,7 @@ public class UnZip {
                 }
                 String fileFormatName = ".java";
                 String formatOfFile = entry.getName().substring(entry.getName().length() - 5);
-                if (entry.getName().contains(".")) {
+                if (!entry.isDirectory()) {
                     if (!fileFormatName.equals(formatOfFile)) {
                         continue;
                     }
