@@ -18,6 +18,7 @@ public class Connect {
     public static List<String> arraylistOfDate = new ArrayList();
     public static File out;
     public static File fileToDelete;
+    public static boolean isSafe = true;
 
     private boolean isFirst = false;
 
@@ -71,19 +72,20 @@ public class Connect {
             String links = link + "/archive/" + arraylistOfCommits.get(0) + ".zip";
             out = new File(Main.pathToFile + Main.folderName + "\\" + arraylistOfCommits.get(0) + ".zip");
             out.deleteOnExit();
-            current = new Thread(new Download(links, out));
+            if (!args.equals("\\")) {
+                isSafe = false;
+            }
+            current = new Thread(new Download(links, out, args));
             current.start();
             current.join();
-            DeleteDirectory.isSafe = false;
-            DeleteDirectory.DeleteDirectory(Main.pathToFile + FolderCreate.folder.getName() + UnZip.arraylist.get(0), args);
-            DeleteDirectory.isSafe = true;
+            isSafe = true;
             MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
             mainOfAnalyze.mainOfAnalyze(UnZip.arraylist.get(0));
             fileToDelete = new File(FolderCreate.folder + UnZip.arraylist.get(0));
             ZipFile.Zip();
             ZipFile.jsonToDelete.delete();
             while (fileToDelete.exists()) {
-                DeleteDirectory.DeleteDirectory(Main.pathToFile + FolderCreate.folder.getName() + UnZip.arraylist.get(0), args);
+                DeleteDirectory.DeleteDirectory();
             }
             if (ZipFile.zipToDelete.length() < 400) {
                 ZipFile.zipToDelete.delete();

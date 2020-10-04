@@ -10,12 +10,14 @@ public class Download implements Runnable {
 
     private final String link;
     private final File out;
+    private final String args;
 
     private static int i = CheckForDownloadedData.arrayOfDownloadedFiles.size();
 
-    protected Download(String link, File out) {
+    protected Download(String link, File out, String args) {
         this.link = link;
         this.out = out;
+        this.args = args;
     }
 
     public void run() {
@@ -32,7 +34,7 @@ public class Download implements Runnable {
             }
             bout.close();
             in.close();
-            UnZip.UnZip(out);
+            UnZip.UnZip(out, args);
             while (out.exists()) {
                 out.delete();
             }

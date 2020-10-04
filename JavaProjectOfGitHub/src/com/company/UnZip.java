@@ -11,7 +11,7 @@ public class UnZip {
 
     public static List<String> arraylist = new ArrayList<>();
 
-    public static void UnZip(File out) {
+    public static void UnZip(File out, String args) {
 
         if (!out.exists() || !out.canRead()) {
             System.out.println("File cannot be read");
@@ -23,19 +23,35 @@ public class UnZip {
 
             while (entries.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) entries.nextElement();
+                if (!Connect.isSafe) {
+                    String find = Connect.arraylistOfCommits.get(0);
+                    String fileName = "\\" + entry.getName().replace("/", "\\");
+                    String getFileName = fileName.substring(0, fileName.indexOf(find));
+                    String fileSafeName = out.getName().replace(".zip", "");
+                    if (!(Main.pathToFile + FolderCreate.folder.getName() + fileName).contains(Main.pathToFile + FolderCreate.folder.getName() + getFileName + fileSafeName + args))
+                    {
+                        continue;
+                    }
+                }
+                String fileFormatName = ".java";
+                String formatOfFile = entry.getName().substring(entry.getName().length() - 5);
+                if (entry.getName().contains(".")) {
+                    if (!fileFormatName.equals(formatOfFile)) {
+                        continue;
+                    }
+                }
                 String nameOfFile = entry.toString();
                 nameOfFile = "\\" + nameOfFile.split("/")[0];
                 if (!arraylist.contains(nameOfFile)) {
                     arraylist.add(nameOfFile);
                 }
-                System.out.println("Un zip complete : " + entry.getName() + "\n");
-
                 if (entry.isDirectory()) {
                     new File(out.getParent(), entry.getName()).mkdirs();
                 } else {
                     write(zip.getInputStream(entry),
                             new BufferedOutputStream(new FileOutputStream(
                                     new File(out.getParent(), entry.getName()))));
+                    System.out.println("Un zip complete : " + entry.getName() + "\n");
                 }
             }
             zip.close();
