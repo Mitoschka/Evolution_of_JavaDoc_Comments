@@ -2,6 +2,7 @@ package com.company;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -66,37 +67,49 @@ public class Connect {
                 }
             }
         }
+        arraylistOfCommits.parallelStream().forEachOrdered(commit -> Parallel(commit, link, args));
+        arraylistOfCommits.clear();
+    }
 
-
-        while (0 < arraylistOfCommits.size()) {
-            String links = link + "/archive/" + arraylistOfCommits.get(0) + ".zip";
-            out = new File(Main.pathToFile + Main.folderName + "\\" + arraylistOfCommits.get(0) + ".zip");
-            out.deleteOnExit();
-            if (!args.equals("\\")) {
-                isSafe = false;
-            }
-            current = new Thread(new Download(links, out, args));
-            current.start();
-            current.join();
-            isSafe = true;
-            MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
-            mainOfAnalyze.mainOfAnalyze(UnZip.arraylist.get(0));
-            fileToDelete = new File(FolderCreate.folder + UnZip.arraylist.get(0));
-            ZipFile.Zip();
-            ZipFile.jsonToDelete.delete();
-            while (fileToDelete.exists()) {
-                DeleteDirectory.DeleteDirectory();
-            }
-            if (ZipFile.zipToDelete.length() < 400) {
-                ZipFile.zipToDelete.delete();
-                while (ZipFile.zipToDelete.exists()) {
-                    Thread.sleep(500);
-                    ZipFile.zipToDelete.delete();
-                }
-            }
-            UnZip.arraylist.remove(0);
-            arraylistOfDate.remove(0);
-            arraylistOfCommits.remove(0);
+    protected void Parallel(String commit, String link, String args) {
+        String links = link + "/archive/" + commit + ".zip";
+        out = new File(Main.pathToFile + Main.folderName + "\\" + commit + ".zip");
+        out.deleteOnExit();
+        if (!args.equals("\\")) {
+            isSafe = false;
         }
+        current = new Thread(new Download(links, out, args));
+        current.start();
+        try {
+            current.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        isSafe = true;
+        MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
+        mainOfAnalyze.mainOfAnalyze(UnZip.arraylist.get(0));
+        fileToDelete = new File(FolderCreate.folder + UnZip.arraylist.get(0));
+        try {
+            ZipFile.Zip();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ZipFile.jsonToDelete.delete();
+        while (fileToDelete.exists()) {
+            DeleteDirectory.DeleteDirectory();
+        }
+        if (ZipFile.zipToDelete.length() < 400) {
+            ZipFile.zipToDelete.delete();
+            while (ZipFile.zipToDelete.exists()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ZipFile.zipToDelete.delete();
+            }
+        }
+        UnZip.arraylist.remove(0);
+        arraylistOfDate.remove(0);
     }
 }

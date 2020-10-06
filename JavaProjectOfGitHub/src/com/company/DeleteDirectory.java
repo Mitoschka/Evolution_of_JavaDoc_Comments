@@ -1,6 +1,8 @@
 
 package com.company;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -17,17 +19,17 @@ public class DeleteDirectory {
             System.exit(0);
 
         } else {
-
             try {
-
-                delete(directory);
-
+                long start = System.currentTimeMillis();
+                //delete(directory);
+                FileUtils.deleteDirectory(new File(String.valueOf(directory)));
+                long end = System.currentTimeMillis();
+                System.out.println("\n" + "Deletion of " + directory.getName() + " completed " + (end - start) / 1000);
             } catch (IOException e) {
                 e.printStackTrace();
                 System.exit(0);
             }
         }
-
         System.out.println("Done");
     }
 
