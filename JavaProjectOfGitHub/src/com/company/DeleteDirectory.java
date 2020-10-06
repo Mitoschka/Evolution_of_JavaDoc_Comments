@@ -12,6 +12,7 @@ public class DeleteDirectory {
         String SRC__FOLDER = Main.pathToFile + FolderCreate.folder.getName() + UnZip.arraylist.get(0);
         File directory = new File(SRC__FOLDER);
 
+        long start = System.currentTimeMillis();
         //make sure directory exists
         if (!directory.exists()) {
 
@@ -20,17 +21,17 @@ public class DeleteDirectory {
 
         } else {
             try {
-                long start = System.currentTimeMillis();
                 //delete(directory);
                 FileUtils.deleteDirectory(new File(String.valueOf(directory)));
-                long end = System.currentTimeMillis();
-                System.out.println("\n" + "Deletion of " + directory.getName() + " completed " + (end - start) / 1000);
+
+                System.out.println("\n" + "Deletion of " + directory.getName() + " completed ");
             } catch (IOException e) {
                 e.printStackTrace();
                 System.exit(0);
             }
         }
-        System.out.println("Done");
+        long end = System.currentTimeMillis();
+        System.out.println("Done " + (end - start) / 1000);
     }
 
     public static void delete(File file)

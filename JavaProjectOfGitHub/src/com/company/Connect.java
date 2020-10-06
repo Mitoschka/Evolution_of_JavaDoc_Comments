@@ -78,13 +78,7 @@ public class Connect {
         if (!args.equals("\\")) {
             isSafe = false;
         }
-        current = new Thread(new Download(links, out, args));
-        current.start();
-        try {
-            current.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Download.DownloadZipFileOfCommit(links, out, args);
         isSafe = true;
         MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
         mainOfAnalyze.mainOfAnalyze(UnZip.arraylist.get(0));

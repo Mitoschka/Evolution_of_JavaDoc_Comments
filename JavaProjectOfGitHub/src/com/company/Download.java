@@ -6,26 +6,16 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class Download implements Runnable {
-
-    private final String link;
-    private final File out;
-    private final String args;
+public class Download {
 
     private static int i = CheckForDownloadedData.arrayOfDownloadedFiles.size();
 
-    protected Download(String link, File out, String args) {
-        this.link = link;
-        this.out = out;
-        this.args = args;
-    }
-
-    public void run() {
+    public static void DownloadZipFileOfCommit(String link, File out, String args) {
         try {
-            URL url = new URL(this.link);
+            URL url = new URL(link);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             BufferedInputStream in = new BufferedInputStream(http.getInputStream());
-            FileOutputStream fos = new FileOutputStream(this.out);
+            FileOutputStream fos = new FileOutputStream(out);
             BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);
             byte[] buffer = new byte[1024];
             int read;
