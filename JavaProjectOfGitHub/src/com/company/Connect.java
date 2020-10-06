@@ -16,6 +16,7 @@ public class Connect {
     public static Thread current;
 
     public static List<String> arraylistOfCommits = new ArrayList();
+    public static List<String> arraylistOfDownload = new ArrayList();
     public static List<String> arraylistOfDate = new ArrayList();
     public static File out;
     public static File fileToDelete;
@@ -67,22 +68,27 @@ public class Connect {
                 }
             }
         }
-        arraylistOfCommits.parallelStream().forEachOrdered(commit -> Parallel(commit, link, args));
-        arraylistOfCommits.clear();
+        arraylistOfCommits.parallelStream().forEach(commit -> ParallelDownload(commit, link, args));
+        UnZip.arraylist.parallelStream().forEachOrdered(commit -> ParallelParser(commit));
+        UnZip.arraylist.clear();
     }
 
-    protected void Parallel(String commit, String link, String args) {
+    protected void ParallelDownload(String commit, String link, String args) {
         String links = link + "/archive/" + commit + ".zip";
         out = new File(Main.pathToFile + Main.folderName + "\\" + commit + ".zip");
         out.deleteOnExit();
         if (!args.equals("\\")) {
             isSafe = false;
+        } else {
+            isSafe = true;
         }
         Download.DownloadZipFileOfCommit(links, out, args);
-        isSafe = true;
+    }
+
+    protected void ParallelParser(String commit) {
         MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
-        mainOfAnalyze.mainOfAnalyze(UnZip.arraylist.get(0));
-        fileToDelete = new File(FolderCreate.folder + UnZip.arraylist.get(0));
+        mainOfAnalyze.mainOfAnalyze(commit);
+        fileToDelete = new File(FolderCreate.folder + commit);
         try {
             ZipFile.Zip();
         } catch (IOException e) {
@@ -90,7 +96,7 @@ public class Connect {
         }
         ZipFile.jsonToDelete.delete();
         while (fileToDelete.exists()) {
-            DeleteDirectory.DeleteDirectory();
+            DeleteDirectory.DeleteDirectory(commit);
         }
         if (ZipFile.zipToDelete.length() < 400) {
             ZipFile.zipToDelete.delete();
@@ -103,7 +109,7 @@ public class Connect {
                 ZipFile.zipToDelete.delete();
             }
         }
-        UnZip.arraylist.remove(0);
+        arraylistOfCommits.remove(0);
         arraylistOfDate.remove(0);
     }
 }
