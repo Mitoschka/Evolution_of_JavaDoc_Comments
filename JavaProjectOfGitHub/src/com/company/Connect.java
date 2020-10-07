@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Connect {
 
@@ -68,21 +69,11 @@ public class Connect {
                 }
             }
         }
-        arraylistOfCommits.parallelStream().forEach(commit -> ParallelDownload(commit, link, args));
+        UnZip.arraylist = new ConcurrentLinkedQueue<>();
+        Thread download = new Thread(new ParallelDownload(link, args));
+        download.start();
         UnZip.arraylist.parallelStream().forEachOrdered(commit -> ParallelParser(commit));
         UnZip.arraylist.clear();
-    }
-
-    protected void ParallelDownload(String commit, String link, String args) {
-        String links = link + "/archive/" + commit + ".zip";
-        out = new File(Main.pathToFile + Main.folderName + "\\" + commit + ".zip");
-        out.deleteOnExit();
-        if (!args.equals("\\")) {
-            isSafe = false;
-        } else {
-            isSafe = true;
-        }
-        Download.DownloadZipFileOfCommit(links, out, args);
     }
 
     protected void ParallelParser(String commit) {
@@ -111,5 +102,30 @@ public class Connect {
         }
         arraylistOfCommits.remove(0);
         arraylistOfDate.remove(0);
+    }
+}
+
+class ParallelDownload implements Runnable {
+    private final String link;
+    private final String args;
+
+    protected ParallelDownload(String link, String args) {
+        this.link = link;
+        this.args = args;
+    }
+
+    @Override
+    public void run() {
+        for (String commit : Connect.arraylistOfCommits) {
+            String links = link + "/archive/" + commit + ".zip";
+            Connect.out = new File(Main.pathToFile + Main.folderName + "\\" + commit + ".zip");
+            Connect.out.deleteOnExit();
+            if (!args.equals("\\")) {
+                Connect.isSafe = false;
+            } else {
+                Connect.isSafe = true;
+            }
+            Download.DownloadZipFileOfCommit(links, Connect.out, args);
+        }
     }
 }

@@ -1,15 +1,14 @@
 package com.company;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
+import java.util.Queue;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class UnZip {
 
-    public static List<String> arraylist = new ArrayList<>();
+    public static Queue<String> arraylist = null;
 
     public static void UnZip(File out, String args) {
 
