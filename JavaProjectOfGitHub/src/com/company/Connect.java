@@ -69,53 +69,13 @@ public class Connect {
                 }
             }
         }
+        Thread pars = new Thread(new ParallelParser());
         UnZip.arraylist = new ConcurrentLinkedQueue<>();
-        Thread download = new Thread(new ParallelDownload(link, args));
-        download.start();
-        UnZip.arraylist.parallelStream().forEachOrdered(commit -> ParallelParser(commit));
-        UnZip.arraylist.clear();
+        ParallelDownload(link, args);
+        pars.start();
     }
 
-    protected void ParallelParser(String commit) {
-        MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
-        mainOfAnalyze.mainOfAnalyze(commit);
-        fileToDelete = new File(FolderCreate.folder + commit);
-        try {
-            ZipFile.Zip();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ZipFile.jsonToDelete.delete();
-        while (fileToDelete.exists()) {
-            DeleteDirectory.DeleteDirectory(commit);
-        }
-        if (ZipFile.zipToDelete.length() < 400) {
-            ZipFile.zipToDelete.delete();
-            while (ZipFile.zipToDelete.exists()) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                ZipFile.zipToDelete.delete();
-            }
-        }
-        arraylistOfCommits.remove(0);
-        arraylistOfDate.remove(0);
-    }
-}
-
-class ParallelDownload implements Runnable {
-    private final String link;
-    private final String args;
-
-    protected ParallelDownload(String link, String args) {
-        this.link = link;
-        this.args = args;
-    }
-
-    @Override
-    public void run() {
+    public void ParallelDownload(String link, String args) {
         for (String commit : Connect.arraylistOfCommits) {
             String links = link + "/archive/" + commit + ".zip";
             Connect.out = new File(Main.pathToFile + Main.folderName + "\\" + commit + ".zip");
@@ -126,6 +86,41 @@ class ParallelDownload implements Runnable {
                 Connect.isSafe = true;
             }
             Download.DownloadZipFileOfCommit(links, Connect.out, args);
+        }
+    }
+}
+
+class ParallelParser implements Runnable {
+    @Override
+    public void run() {
+        while (true) {
+            for (String commit : UnZip.arraylist) {
+                MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
+                mainOfAnalyze.mainOfAnalyze(commit);
+                Connect.fileToDelete = new File(FolderCreate.folder + commit);
+                try {
+                    ZipFile.Zip();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ZipFile.jsonToDelete.delete();
+                while (Connect.fileToDelete.exists()) {
+                    DeleteDirectory.DeleteDirectory(commit);
+                }
+                if (ZipFile.zipToDelete.length() < 400) {
+                    ZipFile.zipToDelete.delete();
+                    while (ZipFile.zipToDelete.exists()) {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        ZipFile.zipToDelete.delete();
+                    }
+                }
+                Connect.arraylistOfCommits.remove(0);
+                Connect.arraylistOfDate.remove(0);
+            }
         }
     }
 }

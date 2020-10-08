@@ -21,11 +21,13 @@ public class DeleteDirectory {
 
         } else {
             try {
-                //delete(directory);
-                FileUtils.deleteDirectory(new File(String.valueOf(directory)));
-
+                while (directory.exists()) {
+                    //delete(directory);
+                    FileUtils.deleteDirectory(directory);
+                    Thread.sleep(500);
+                }
                 System.out.println("\n" + "Deletion of " + directory.getName() + " completed ");
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
                 System.exit(0);
             }
