@@ -2,13 +2,10 @@ package com.company;
 
 import java.io.*;
 import java.util.Enumeration;
-import java.util.Queue;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class UnZip {
-
-    public static Queue<String> arraylist = null;
 
     public static void UnZip(File out, String args) {
 
@@ -41,8 +38,8 @@ public class UnZip {
                 }
                 String nameOfFile = entry.toString();
                 nameOfFile = "\\" + nameOfFile.split("/")[0];
-                if (!arraylist.contains(nameOfFile)) {
-                    arraylist.add(nameOfFile);
+                if (!Main.arraylist.contains(nameOfFile)) {
+                    Main.arraylist.add(nameOfFile);
                 }
                 if (entry.isDirectory()) {
                     new File(out.getParent(), entry.getName()).mkdirs();

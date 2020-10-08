@@ -10,7 +10,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Connect {
 
@@ -70,7 +69,6 @@ public class Connect {
             }
         }
         Thread pars = new Thread(new ParallelParser());
-        UnZip.arraylist = new ConcurrentLinkedQueue<>();
         ParallelDownload(link, args);
         pars.start();
     }
@@ -78,14 +76,14 @@ public class Connect {
     public void ParallelDownload(String link, String args) {
         for (String commit : Connect.arraylistOfCommits) {
             String links = link + "/archive/" + commit + ".zip";
-            Connect.out = new File(Main.pathToFile + Main.folderName + "\\" + commit + ".zip");
-            Connect.out.deleteOnExit();
+            out = new File(Main.pathToFile + Main.folderName + "\\" + commit + ".zip");
+            out.deleteOnExit();
             if (!args.equals("\\")) {
                 Connect.isSafe = false;
             } else {
                 Connect.isSafe = true;
             }
-            Download.DownloadZipFileOfCommit(links, Connect.out, args);
+            Download.DownloadZipFileOfCommit(links, out, args);
         }
     }
 }
@@ -93,8 +91,8 @@ public class Connect {
 class ParallelParser implements Runnable {
     @Override
     public void run() {
-        while (true) {
-            for (String commit : UnZip.arraylist) {
+        while (Main.arraylist.size() != 0) {
+            for (String commit : Main.arraylist) {
                 MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
                 mainOfAnalyze.mainOfAnalyze(commit);
                 Connect.fileToDelete = new File(FolderCreate.folder + commit);
@@ -120,6 +118,7 @@ class ParallelParser implements Runnable {
                 }
                 Connect.arraylistOfCommits.remove(0);
                 Connect.arraylistOfDate.remove(0);
+                Main.arraylist.remove();
             }
         }
     }

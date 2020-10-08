@@ -4,11 +4,14 @@ import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Main {
 
     public static String pathToFile = "C:\\";
     public static String folderName = "JSON Folder";
+    public static Queue<String> arraylist;
 
     public static void main(String[] args) throws Exception {
 
@@ -20,6 +23,7 @@ public class Main {
         System.out.print("Please, wait... ");
         boolean isOkay = false;
         int count = 1;
+        arraylist = new ConcurrentLinkedQueue<>();
         while (true) {
             try {
                 String newString = link.replace("https://github.com/", "https://api.github.com/repos/");
