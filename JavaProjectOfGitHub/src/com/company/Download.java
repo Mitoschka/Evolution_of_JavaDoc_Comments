@@ -8,8 +8,6 @@ import java.net.URL;
 
 public class Download {
 
-    private static int i = CheckForDownloadedData.arrayOfDownloadedFiles.size();
-
     public static void DownloadZipFileOfCommit(String link, File out, String args) {
         try {
             URL url = new URL(link);
@@ -32,7 +30,7 @@ public class Download {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        i++;
-        System.out.println("Download " + i + " file complete" + "\n");
+        CheckForDownloadedData.countOfDownloadFile++;
+        System.out.println("Download " + CheckForDownloadedData.countOfDownloadFile + " file complete" + "\n");
     }
 }

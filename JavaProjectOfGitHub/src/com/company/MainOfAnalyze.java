@@ -43,10 +43,10 @@ public class MainOfAnalyze {
         }
     }
 
-    public static void mainOfAnalyze(String args) {
+    public static void mainOfAnalyze(String args, String commit, String date) {
         try {
             //Парсим все java-исходники из указанной директории в список DocSegments - типа JavaDocSegment
-            ParseDirectory(FolderCreate.folder + args);
+            ParseDirectory(FolderCreate.folder + args, commit, date);
 
             //PrintDocsReport распечатывает в PlainComments.txt извлеченные комментарии
             PrintDocsReport(DocSegments, args);
@@ -71,7 +71,7 @@ public class MainOfAnalyze {
         }
     }
 
-    public static void ParseDirectory(String Path) throws IOException {
+    public static void ParseDirectory(String Path, String commit, String date) throws IOException {
         ArrayList<JavaDocSegment> JavaDocSegments = new ArrayList<>();
         File path = new File(Path);
         if (path.isFile())
@@ -89,7 +89,7 @@ public class MainOfAnalyze {
                     e.printStackTrace();
                 }
             });
-            DocCommit segment = new DocCommit(JavaDocSegments, Connect.arraylistOfCommits.get(0), Connect.arraylistOfDate.get(0));
+            DocCommit segment = new DocCommit(JavaDocSegments, commit, date);
             theLock.lock();
             DocSegments.add(segment);
             theLock.unlock();

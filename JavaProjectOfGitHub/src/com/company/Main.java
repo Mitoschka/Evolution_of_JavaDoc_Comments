@@ -11,30 +11,41 @@ public class Main {
 
     public static String pathToFile = "C:\\";
     public static String folderName = "JSON Folder";
-    public static Queue<String> arraylist;
+    public static Queue<String> queueList;
+    public static Queue<String> commitToParse;
+    public static Queue<String> dateToParse;
 
     public static void main(String[] args) throws Exception {
 
+        long start = System.currentTimeMillis();
         new FolderCreate();
         String ext = ".json.zip";
         CheckForDownloadedData.FindFiles(ext);
+        start(args);
+        long end = System.currentTimeMillis();
+        System.out.println("Finished parsing " + (end - start) / 1000);
+    }
+
+    public static void start(String[] args) throws InterruptedException {
         System.out.print("Input URL of GitHub: ");
         String link = args[0];
         System.out.print("Please, wait... ");
         boolean isOkay = false;
         int count = 1;
-        arraylist = new ConcurrentLinkedQueue<>();
+        queueList = new ConcurrentLinkedQueue<>();
+        commitToParse = new ConcurrentLinkedQueue<>();
+        dateToParse = new ConcurrentLinkedQueue<>();
+        new Thread(new ParallelParser()).start();
+        Download download = new Download();
         while (true) {
             try {
                 String newString = link.replace("https://github.com/", "https://api.github.com/repos/");
                 newString = newString + "/commits?page=" + count;
-                Connect server = new Connect();
-                server.Connect(newString, link, args[1]);
+                Connect.Connect(newString, link, args[1]);
                 count++;
             } catch (MalformedURLException e) {
                 System.out.println("\nOops, there was an error, maybe you entered the wrong link, try again.\n");
-                System.out.print("\nInput URL of GitHub: ");
-                return;
+                System.exit(1);
             } catch (SSLException e) {
                 continue;
             } catch (ConnectException e) {
@@ -45,15 +56,17 @@ public class Main {
                     if (!isOkay) {
                         System.out.print("\n\nSorry, request limit exceeded, try again later or use a VPN\n");
                         FolderCreate.folder.delete();
-                        return;
+                        System.exit(1);
                     } else {
                         System.out.print("\n\nAll file download complete." + "\n");
+                        System.exit(0);
                     }
-                    return;
                 } else {
                     System.out.println("\nOops, there was an error, maybe you entered the wrong link, try again.\n");
-                    return;
+                    System.exit(1);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             isOkay = true;
         }

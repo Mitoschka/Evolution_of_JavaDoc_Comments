@@ -23,17 +23,21 @@ public class DeleteDirectory {
             try {
                 while (directory.exists()) {
                     //delete(directory);
-                    FileUtils.deleteDirectory(directory);
-                    Thread.sleep(500);
+                    try {
+                        FileUtils.deleteDirectory(directory);
+                    } catch (Exception e) {
+                        Thread.sleep(100);
+                    }
                 }
                 System.out.println("\n" + "Deletion of " + directory.getName() + " completed ");
-            } catch (IOException | InterruptedException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
                 System.exit(0);
             }
         }
         long end = System.currentTimeMillis();
         System.out.println("Done " + (end - start) / 1000);
+        return;
     }
 
     public static void delete(File file)

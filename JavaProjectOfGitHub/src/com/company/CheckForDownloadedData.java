@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class CheckForDownloadedData {
 
+    public static int countOfDownloadFile;
+
     public static ArrayList<String> arrayOfDownloadedFiles = new ArrayList<>();
 
     public static void FindFiles(String ext) {
@@ -19,6 +21,7 @@ public class CheckForDownloadedData {
                 arrayOfDownloadedFiles.add(result);
             }
         }
+        countOfDownloadFile = arrayOfDownloadedFiles.size();
     }
 }
 

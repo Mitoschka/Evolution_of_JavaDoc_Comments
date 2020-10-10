@@ -7,6 +7,9 @@ import java.util.zip.ZipFile;
 
 public class UnZip {
 
+    public static String nameOfFile;
+    public static ZipEntry entry;
+
     public static void UnZip(File out, String args) {
 
         if (!out.exists() || !out.canRead()) {
@@ -18,7 +21,7 @@ public class UnZip {
             Enumeration entries = zip.entries();
 
             while (entries.hasMoreElements()) {
-                ZipEntry entry = (ZipEntry) entries.nextElement();
+                entry  = (ZipEntry) entries.nextElement();
                 if (!Connect.isSafe) {
                     String find = Connect.arraylistOfCommits.get(0);
                     String fileName = "\\" + entry.getName().replace("/", "\\");
@@ -36,13 +39,9 @@ public class UnZip {
                         continue;
                     }
                 }
-                String nameOfFile = entry.toString();
-                nameOfFile = "\\" + nameOfFile.split("/")[0];
-                if (!Main.arraylist.contains(nameOfFile)) {
-                    Main.arraylist.add(nameOfFile);
-                }
                 if (entry.isDirectory()) {
                     new File(out.getParent(), entry.getName()).mkdirs();
+                    System.out.println("Un zip complete : " + entry.getName() + "\n");
                 } else {
                     write(zip.getInputStream(entry),
                             new BufferedOutputStream(new FileOutputStream(
@@ -51,6 +50,11 @@ public class UnZip {
                 }
             }
             zip.close();
+            nameOfFile = entry.toString();
+            nameOfFile = "\\" + nameOfFile.split("/")[0];
+            if (!Main.queueList.contains(nameOfFile)) {
+                Main.queueList.add(nameOfFile);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
