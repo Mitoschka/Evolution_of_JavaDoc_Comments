@@ -90,15 +90,20 @@ public class Connect {
     }
 
     public static void ParallelDownload(String link, String args) {
-        Iterator<String> downloadIter = arraylistOfCommits.iterator();
-        while (downloadIter.hasNext()) {
-            String commitToDownload = downloadIter.next();
-            String links = link + "/archive/" + commitToDownload + ".zip";
-            out = new File(Main.pathToFile + Main.folderName + "\\" + commitToDownload + ".zip");
-            out.deleteOnExit();
-            Connect.isSafe = args.equals("\\");
-            Download.DownloadZipFileOfCommit(links, out, args);
-            downloadIter.remove();
+        while (Main.queueList.size() < 2) {
+            if (arraylistOfCommits.isEmpty()) {
+                return;
+            }
+            Iterator<String> downloadIter = arraylistOfCommits.iterator();
+            while (downloadIter.hasNext()) {
+                String commitToDownload = downloadIter.next();
+                String links = link + "/archive/" + commitToDownload + ".zip";
+                out = new File(FolderCreate.temporaryFolder + "\\" + commitToDownload + ".zip");
+                out.deleteOnExit();
+                Connect.isSafe = args.equals("\\");
+                Download.DownloadZipFileOfCommit(links, out, args);
+                downloadIter.remove();
+            }
         }
     }
 }
@@ -118,7 +123,7 @@ class ParallelParser implements Runnable {
                         String dateToParser = dateIter.next();
                         MainOfAnalyze mainOfAnalyze = new MainOfAnalyze();
                         mainOfAnalyze.mainOfAnalyze(queueToParser, commitToParser, dateToParser);
-                        Connect.fileToDelete = new File(FolderCreate.folder + queueToParser);
+                        Connect.fileToDelete = new File(FolderCreate.temporaryFolder + queueToParser);
                         try {
                             ZipFile.Zip();
                         } catch (IOException e) {
@@ -126,18 +131,7 @@ class ParallelParser implements Runnable {
                         }
                         ZipFile.jsonToDelete.delete();
                         while (Connect.fileToDelete.exists()) {
-                            DeleteDirectory.DeleteDirectory(queueToParser);
-                        }
-                        if (ZipFile.zipToDelete.length() < 400) {
-                            ZipFile.zipToDelete.deleteOnExit();
-                            while (ZipFile.zipToDelete.exists()) {
-                                try {
-                                    Thread.sleep(500);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                ZipFile.zipToDelete.delete();
-                            }
+                            DeleteDirectory.DeleteDirectory();
                         }
                         queueIter.remove();
                         commitIter.remove();

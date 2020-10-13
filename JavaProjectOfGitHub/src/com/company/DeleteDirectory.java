@@ -8,8 +8,8 @@ import java.io.IOException;
 
 public class DeleteDirectory {
 
-    public static void DeleteDirectory(String commit) {
-        String SRC__FOLDER = Main.pathToFile + FolderCreate.folder.getName() + commit;
+    public static void DeleteDirectory() {
+        String SRC__FOLDER = Connect.fileToDelete.getAbsolutePath();
         File directory = new File(SRC__FOLDER);
 
         long start = System.currentTimeMillis();

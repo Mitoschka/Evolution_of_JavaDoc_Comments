@@ -5,16 +5,17 @@ import java.io.File;
 public class FolderCreate {
 
     protected static File folder;
+    protected static File temporaryFolder;
 
     protected FolderCreate() {
 
-        folder = new File(Main.pathToFile + Main.folderName);
+        folder = new File(Main.pathToDisk + Main.folderName);
+        temporaryFolder = new File(Main.pathToTemporaryDisk + Main.folderName);
 
-        String SRC__FOLDER = Main.pathToFile + folder.getName();
-        File file = new File(SRC__FOLDER);
-        if (file.exists()) {
+        if (folder.exists() && temporaryFolder.exists()) {
             return;
         }
         folder.mkdir();
+        temporaryFolder.mkdir();
     }
 }

@@ -9,21 +9,26 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Main {
 
-    public static String pathToFile = "C:\\";
+    public static String pathToDisk = "C:\\";
+    public static String pathToTemporaryDisk = "E:\\";
     public static String folderName = "JSON Folder";
+
     public static Queue<String> queueList;
     public static Queue<String> commitToParse;
     public static Queue<String> dateToParse;
 
+    private static long start;
+    private static long end;
+
     public static void main(String[] args) throws Exception {
 
-        long start = System.currentTimeMillis();
+        start = System.currentTimeMillis();
         new FolderCreate();
         String ext = ".json.zip";
         CheckForDownloadedData.FindFiles(ext);
         start(args);
-        long end = System.currentTimeMillis();
-        System.out.println("Finished parsing " + (end - start) / 1000);
+        end = System.currentTimeMillis();
+        System.out.println("Finished " + (end - start) / 1000);
     }
 
     public static void start(String[] args) throws InterruptedException {
@@ -59,6 +64,8 @@ public class Main {
                         System.exit(1);
                     } else {
                         System.out.print("\n\nAll file download complete." + "\n");
+                        end = System.currentTimeMillis();
+                        System.out.println("Finished " + (end - start) / 1000);
                         System.exit(0);
                     }
                 } else {

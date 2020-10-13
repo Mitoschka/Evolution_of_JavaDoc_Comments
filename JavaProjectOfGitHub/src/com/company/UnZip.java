@@ -1,63 +1,76 @@
 package com.company;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 public class UnZip {
 
     public static String nameOfFile;
-    public static ZipEntry entry;
 
-    public static void UnZip(File out, String args) {
+    private static ZipFile zip;
+    private static Enumeration entries;
+
+    public static void UnZip(File out, String args) throws IOException {
 
         if (!out.exists() || !out.canRead()) {
             System.out.println("File cannot be read");
         }
+        zip = new ZipFile(out);
+        entries = zip.entries();
+        ArrayList<ZipEntry> arrayEntries = new ArrayList<>();
 
-        try {
-            ZipFile zip = new ZipFile(out);
-            Enumeration entries = zip.entries();
-
-            while (entries.hasMoreElements()) {
-                entry  = (ZipEntry) entries.nextElement();
-                if (!Connect.isSafe) {
-                    String find = Connect.arraylistOfCommits.get(0);
-                    String fileName = "\\" + entry.getName().replace("/", "\\");
-                    String getFileName = fileName.substring(0, fileName.indexOf(find));
-                    String fileSafeName = out.getName().replace(".zip", "");
-                    if (!(Main.pathToFile + FolderCreate.folder.getName() + fileName).contains(Main.pathToFile + FolderCreate.folder.getName() + getFileName + fileSafeName + args))
-                    {
-                        continue;
-                    }
-                }
-                String fileFormatName = ".java";
-                String formatOfFile = entry.getName().substring(entry.getName().length() - 5);
-                if (!entry.isDirectory()) {
-                    if (!fileFormatName.equals(formatOfFile)) {
-                        continue;
-                    }
-                }
-                if (entry.isDirectory()) {
-                    new File(out.getParent(), entry.getName()).mkdirs();
-                    System.out.println("Un zip complete : " + entry.getName() + "\n");
-                } else {
-                    write(zip.getInputStream(entry),
-                            new BufferedOutputStream(new FileOutputStream(
-                                    new File(out.getParent(), entry.getName()))));
-                    System.out.println("Un zip complete : " + entry.getName() + "\n");
-                }
-            }
-            zip.close();
-            nameOfFile = entry.toString();
-            nameOfFile = "\\" + nameOfFile.split("/")[0];
-            if (!Main.queueList.contains(nameOfFile)) {
-                Main.queueList.add(nameOfFile);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (entries.hasMoreElements()) {
+            arrayEntries.add((ZipEntry) entries.nextElement());
         }
+        System.out.println("Unzip with size " + arrayEntries.size() + " started : " + zip.getName() + "\n");
+        arrayEntries.parallelStream().forEachOrdered(entry -> {
+            UnzipFile(entry, arrayEntries, out, args);
+        });
+        zip.close();
+        nameOfFile = "\\" + nameOfFile.split("/")[0];
+        if (!Main.queueList.contains(nameOfFile)) {
+            Main.queueList.add(nameOfFile);
+        }
+        System.out.println("Un zip complete : " + zip.getName() + "\n");
+    }
+
+    private static void UnzipFile(ZipEntry entry, ArrayList<ZipEntry> arrayEntries, File out, String args) {
+        try {
+            if (!Connect.isSafe) {
+                String find = Connect.arraylistOfCommits.get(0);
+                String fileName = "\\" + entry.getName().replace("/", "\\");
+                String getFileName = fileName.substring(0, fileName.indexOf(find));
+                String fileSafeName = out.getName().replace(".zip", "");
+                if (!(FolderCreate.temporaryFolder + fileName).contains(FolderCreate.temporaryFolder + getFileName + fileSafeName + args)) {
+                    return;
+                }
+            }
+            String fileFormatName = ".java";
+            String formatOfFile = entry.getName().substring(entry.getName().length() - 5);
+            if (!entry.isDirectory()) {
+                if (!fileFormatName.equals(formatOfFile)) {
+                    return;
+                }
+            }
+            if (entry.isDirectory()) {
+                new File(out.getParent(), entry.getName()).mkdirs();
+            } else {
+                write(zip.getInputStream(entry),
+                        new BufferedOutputStream(new FileOutputStream(
+                                new File(out.getParent(), entry.getName()))));
+            }
+        } catch (ZipException zipException) {
+            zipException.printStackTrace();
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+        nameOfFile = entry.toString();
     }
 
     private static void write(InputStream in, OutputStream out) throws IOException {

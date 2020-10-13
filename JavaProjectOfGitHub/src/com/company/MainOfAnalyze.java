@@ -46,7 +46,7 @@ public class MainOfAnalyze {
     public static void mainOfAnalyze(String args, String commit, String date) {
         try {
             //Парсим все java-исходники из указанной директории в список DocSegments - типа JavaDocSegment
-            ParseDirectory(FolderCreate.folder + args, commit, date);
+            ParseDirectory(FolderCreate.temporaryFolder + args, commit, date);
 
             //PrintDocsReport распечатывает в PlainComments.txt извлеченные комментарии
             PrintDocsReport(DocSegments, args);
