@@ -82,7 +82,7 @@ public class MainOfAnalyze {
                 files.add(file);
             }).explore(path);
 
-            files.parallelStream().forEach(file -> {
+            files.forEach(file -> {
                 try {
                     ParseFile(file, JavaDocSegments);
                 } catch (IOException e) {
