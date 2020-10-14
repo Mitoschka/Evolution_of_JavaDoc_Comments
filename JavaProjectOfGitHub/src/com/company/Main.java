@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Main {
 
     public static String pathToDisk = "C:\\";
-    public static String pathToTemporaryDisk = "E:\\";
+    public static String pathToTemporaryDisk = "D:\\";
     public static String folderName = "JSON Folder";
 
     public static Queue<String> queueList;
@@ -41,7 +41,6 @@ public class Main {
         commitToParse = new ConcurrentLinkedQueue<>();
         dateToParse = new ConcurrentLinkedQueue<>();
         new Thread(new ParallelParser()).start();
-        Download download = new Download();
         while (true) {
             try {
                 String newString = link.replace("https://github.com/", "https://api.github.com/repos/");
