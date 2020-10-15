@@ -1,8 +1,9 @@
 package com.company;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -21,14 +22,14 @@ public class UnZip {
         }
         zip = new ZipFile(out);
         entries = zip.entries();
-        ArrayList<ZipEntry> arrayEntries = new ArrayList<>();
+        Queue<ZipEntry> arrayEntries = new ConcurrentLinkedQueue<>();
 
         while (entries.hasMoreElements()) {
-            arrayEntries.add((ZipEntry) entries.nextElement());
+            arrayEntries.add((ZipEntry)entries.nextElement());
         }
-        System.out.println("Unzip with size " + arrayEntries.size() + " started : " + zip.getName() + "\n");
+        System.out.println("\nUnzip with size " + arrayEntries.size() + " started : " + zip.getName() + "\n");
         arrayEntries.parallelStream().forEachOrdered(entry -> {
-            UnzipFile(entry, arrayEntries, out, args);
+            UnzipFile(entry, out, args);
         });
         zip.close();
         nameOfFile = "\\" + nameOfFile.split("/")[0];
@@ -38,7 +39,7 @@ public class UnZip {
         System.out.println("Un zip complete : " + zip.getName() + "\n");
     }
 
-    private static void UnzipFile(ZipEntry entry, ArrayList<ZipEntry> arrayEntries, File out, String args) {
+    private static void UnzipFile(ZipEntry entry, File out, String args) {
         try {
             if (!Connect.isSafe) {
                 String find = Connect.arraylistOfCommits.get(0);

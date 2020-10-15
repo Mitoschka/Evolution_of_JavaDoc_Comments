@@ -9,6 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -35,9 +37,6 @@ public class MainOfAnalyze {
             nameOfOutJson = FolderCreate.folder + args + ".json";
             String response = json.toJson(comments);
             outJson.println(response);
-            while (DocSegments.size() != 0) {
-                DocSegments.clear();
-            }
         } catch (Exception e) {
             out.println(e.getMessage());
         }
@@ -59,7 +58,7 @@ public class MainOfAnalyze {
     }
 
 
-    public static void ParseJavadoc(String block, String signature, String namespace, String path, ArrayList<JavaDocSegment> JavaDocSegments) throws IOException {
+    public static void ParseJavadoc(String block, String signature, String namespace, String path, Queue<JavaDocSegment> JavaDocSegments) throws IOException {
         if (block.contains("{@inheritDoc}")) return;
         if (signature.contains("package")) return;
 
@@ -72,7 +71,7 @@ public class MainOfAnalyze {
     }
 
     public static void ParseDirectory(String Path, String commit, String date) throws IOException {
-        ArrayList<JavaDocSegment> JavaDocSegments = new ArrayList<>();
+        Queue<JavaDocSegment> JavaDocSegments = new ConcurrentLinkedQueue<>();
         File path = new File(Path);
         if (path.isFile())
             ParseFile(new File(Path), JavaDocSegments);
@@ -82,7 +81,7 @@ public class MainOfAnalyze {
                 files.add(file);
             }).explore(path);
 
-            files.forEach(file -> {
+            files.parallelStream().forEach(file -> {
                 try {
                     ParseFile(file, JavaDocSegments);
                 } catch (IOException e) {
@@ -98,7 +97,7 @@ public class MainOfAnalyze {
     }
 
 
-    public static void ParseFile(File file, ArrayList<JavaDocSegment> JavaDocSegments) throws IOException {
+    public static void ParseFile(File file, Queue<JavaDocSegment> JavaDocSegments) throws IOException {
         if (file.getAbsolutePath().contains(".java")) {
             byte[] encodedContent = Files.readAllBytes(file.toPath());
             try {
