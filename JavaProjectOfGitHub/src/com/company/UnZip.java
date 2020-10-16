@@ -27,7 +27,7 @@ public class UnZip {
         while (entries.hasMoreElements()) {
             arrayEntries.add((ZipEntry)entries.nextElement());
         }
-        System.out.println("\nUnzip with size " + arrayEntries.size() + " started : " + zip.getName() + "\n");
+        System.out.println("Unzip with size " + arrayEntries.size() + " started : " + zip.getName() + "\n");
         arrayEntries.parallelStream().forEachOrdered(entry -> {
             UnzipFile(entry, out, args);
         });

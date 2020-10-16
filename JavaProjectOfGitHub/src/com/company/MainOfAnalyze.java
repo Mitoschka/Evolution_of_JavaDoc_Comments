@@ -22,14 +22,11 @@ public class MainOfAnalyze {
 
     public static int MinCommentSize = 10;
 
-    public static ArrayList DocSegments = new ArrayList<>();
-
+    public static ArrayList DocSegments;
 
     public static String nameOfOutJson;
 
-
     static final Pattern JavaDocPattern = Pattern.compile("(?s)package\\s*(.*?);|(/\\*\\*(?s:(?!\\*/).)*\\*/)(.*?)[;\\{]");
-
 
     public static void PrintDocsReport(ArrayList<DocCommit> comments, String args) {
         Gson json = new Gson();
@@ -44,6 +41,8 @@ public class MainOfAnalyze {
 
     public static void mainOfAnalyze(String args, String commit, String date) {
         try {
+            DocSegments = new ArrayList<>();
+
             //Парсим все java-исходники из указанной директории в список DocSegments - типа JavaDocSegment
             ParseDirectory(FolderCreate.temporaryFolder + args, commit, date);
 
@@ -116,6 +115,5 @@ public class MainOfAnalyze {
             }
         }
     }
-
     static Lock theLock = new ReentrantReadWriteLock().writeLock();
 }
