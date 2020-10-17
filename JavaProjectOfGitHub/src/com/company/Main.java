@@ -34,7 +34,7 @@ public class Main {
     public static void start(String[] args) throws InterruptedException {
         System.out.print("Input URL of GitHub: ");
         String link = args[0];
-        System.out.print("\nPlease, wait... \n\n");
+        System.out.print("\nPlease, wait... \n");
         boolean isOkay = false;
         int count = 1;
         queueList = new ConcurrentLinkedQueue<>();

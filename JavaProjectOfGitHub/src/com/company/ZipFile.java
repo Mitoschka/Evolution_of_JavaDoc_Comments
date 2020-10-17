@@ -7,11 +7,9 @@ import java.util.zip.ZipOutputStream;
 public class ZipFile {
 
     public static File jsonToDelete;
-    public static File zipToDelete;
 
     public static void Zip() throws IOException {
         String sourceFile = MainOfAnalyze.nameOfOutJson;
-        jsonToDelete = new File(sourceFile);
         FileOutputStream fos = new FileOutputStream(sourceFile + ".zip");
         ZipOutputStream zipOut = new ZipOutputStream(fos);
         File fileToZip = new File(sourceFile);
@@ -26,6 +24,6 @@ public class ZipFile {
         zipOut.close();
         fis.close();
         fos.close();
-        zipToDelete = new File(MainOfAnalyze.nameOfOutJson + ".zip");
+        jsonToDelete = new File(sourceFile);
     }
 }

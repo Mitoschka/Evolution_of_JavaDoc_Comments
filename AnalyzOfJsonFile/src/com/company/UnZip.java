@@ -12,15 +12,11 @@ public class UnZip {
         if (!out.exists() || !out.canRead()) {
             System.out.println("File cannot be read");
         }
-
         try {
             ZipFile zip = new ZipFile(out);
             Enumeration entries = zip.entries();
-
             while (entries.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) entries.nextElement();
-                System.out.println("Un zip complete : " + entry.getName() + "\n");
-
                 if (entry.isDirectory()) {
                     new File(out.getParent(), entry.getName()).mkdirs();
                 } else {
@@ -28,8 +24,8 @@ public class UnZip {
                             new BufferedOutputStream(new FileOutputStream(
                                     new File(out.getParent(), entry.getName()))));
                 }
+                System.out.println("Un zip complete : " + entry.getName() + "\n");
             }
-
             zip.close();
         } catch (IOException e) {
             e.printStackTrace();

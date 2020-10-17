@@ -23,12 +23,11 @@ public class UnZip {
         zip = new ZipFile(out);
         entries = zip.entries();
         Queue<ZipEntry> arrayEntries = new ConcurrentLinkedQueue<>();
-
         while (entries.hasMoreElements()) {
-            arrayEntries.add((ZipEntry)entries.nextElement());
+            arrayEntries.add((ZipEntry) entries.nextElement());
         }
-        System.out.println("Unzip with size " + arrayEntries.size() + " started : " + zip.getName() + "\n");
-        arrayEntries.parallelStream().forEachOrdered(entry -> {
+        System.out.println("\nUnzip with size " + arrayEntries.size() + " started : " + zip.getName() + "\n");
+        arrayEntries.forEach(entry -> {
             UnzipFile(entry, out, args);
         });
         zip.close();
@@ -71,7 +70,7 @@ public class UnZip {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        nameOfFile = entry.toString();
+        nameOfFile = entry.getName();
     }
 
     private static void write(InputStream in, OutputStream out) throws IOException {

@@ -42,12 +42,16 @@ public class MainOfAnalyze {
     public static void mainOfAnalyze(String args, String commit, String date) {
         try {
             DocSegments = new ArrayList<>();
+            String commitName = args.substring(args.lastIndexOf("-") + 1);
+            String repositoryName = args.substring(args.length() - args.length(), args.lastIndexOf("-") + 1);
+            String dateName = Main.dateToParse.peek().split(" ")[0];
+            String sourceFile = repositoryName + dateName + "_" + commitName;
 
             //Парсим все java-исходники из указанной директории в список DocSegments - типа JavaDocSegment
             ParseDirectory(FolderCreate.temporaryFolder + args, commit, date);
 
             //PrintDocsReport распечатывает в PlainComments.txt извлеченные комментарии
-            PrintDocsReport(DocSegments, args);
+            PrintDocsReport(DocSegments, sourceFile);
 
         } catch (ConcurrentModificationException ignored) {
         } catch (Exception e) {
