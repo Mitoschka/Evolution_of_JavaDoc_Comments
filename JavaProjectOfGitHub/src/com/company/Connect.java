@@ -1,20 +1,20 @@
 package com.company;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ConnectException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class Connect {
-    public static List<String> arraylistOfCommits;
-    public static List<String> arraylistOfDate;
+    public static List<String> arraylistOfCommits = new ArrayList<>();
+    public static List<String> arraylistOfDate = new ArrayList<>();
+    public static List<String> SortedArrayOfDate = new LinkedList<>();
+    public static List<String> SortedArrayOfCommits = new LinkedList<>();
+
+    public static Thread thread;
+    public static boolean stop = false;
 
     public static File out;
     public static File fileToDelete;
@@ -24,50 +24,74 @@ public class Connect {
 
     private static int second = 0;
 
-    public static void Connect(String newString, String link, String args) throws Exception, ConnectException {
-
-        arraylistOfCommits = new ArrayList<>();
-        arraylistOfDate = new ArrayList<>();
+    public static void Connect(String newString) throws Exception {
 
         HttpURLConnection httpURLConnection = (HttpURLConnection) (new URL(newString)).openConnection();
+        String userCredentials = Main.User + ":" + Main.Password;
+        String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
+        httpURLConnection.setRequestProperty("Authorization", basicAuth);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-
         String line;
         String inputLine;
         for (line = ""; (inputLine = bufferedReader.readLine()) != null; line = line + "\n" + inputLine) {
         }
 
         bufferedReader.close();
-        Arrays.stream(line.split("\\[\\{\"sha\":\"")).skip(1L).map((L) -> {
-            return L.split("\"")[0];
-        }).forEach((L) -> {
-            if (!isFirst) {
-                arraylistOfCommits.add(L);
-                isFirst = true;
-            }
-        });
-        Arrays.stream(line.split("\\]\\},\\{\"sha\":\"")).skip(1L).map((L) -> {
-            return L.split("\"")[0];
-        }).forEachOrdered((L) -> {
-            if (!arraylistOfCommits.contains(L)) {
-                arraylistOfCommits.add(L);
-            }
-        });
-
+        Arrays.stream(line.split("\\[\\{\"sha\":\""))
+                .skip(1L)
+                .map((L) -> L.split("\"")[0])
+                .forEach((L) -> {
+                    if (!isFirst) {
+                        arraylistOfCommits.add(L);
+                        isFirst = true;
+                    }
+                });
+        Arrays.stream(line.split("\\]\\},\\{\"sha\":\""))
+                .skip(1L)
+                .map((L) -> L.split("\"")[0])
+                .forEach((L) -> {
+                    if (!arraylistOfCommits.contains(L)) {
+                        arraylistOfCommits.add(L);
+                    }
+                });
         isFirst = false;
         second = 0;
-        Arrays.stream(line.split("\"date\":\"")).skip(1L).map((G) -> {
-            return G.split("\"")[0];
-        }).forEachOrdered((G) -> {
-            String time = G.replace("T", " ").replace("Z", "");
-            if (second == 0) {
-                arraylistOfDate.add(time);
-                second++;
-            } else {
-                second = 0;
-            }
-        });
+        Arrays.stream(line.split("\"date\":\""))
+                .skip(1L)
+                .map((G) -> G.split("\"")[0])
+                .forEach((G) -> {
+                    String time = G.replace("T", " ").replace("Z", "");
+                    if (second == 0) {
+                        arraylistOfDate.add(time);
+                        second++;
+                    } else {
+                        second = 0;
+                    }
+                });
+    }
 
+    public static void Execution(String link, String args) {
+        CheckForDuplicate();
+        if (Main.withConnecting) {
+            DateSort();
+            DeleteWrongDate();
+            arraylistOfCommits = SortedArrayOfCommits;
+            arraylistOfDate = SortedArrayOfDate;
+            try {
+                CreateFile.CommitFile();
+                CreateFile.DateFile();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        Main.commitToParse.addAll(arraylistOfCommits);
+        Main.dateToParse.addAll(arraylistOfDate);
+        thread = new Thread(new ParallelParser());
+        thread.start();
+        ParallelDownload(link, args);
+    }
+
+    public static void CheckForDuplicate() {
         ArrayList<String> arrayOfDownloadedFilesToIter = new ArrayList<>(CheckForDownloadedData.arrayOfDownloadedFiles);
         ArrayList<String> arraylistOfCommitsToIter = new ArrayList<>(arraylistOfCommits);
         Iterator<String> downloadedIter = arrayOfDownloadedFilesToIter.iterator();
@@ -83,10 +107,48 @@ public class Connect {
                 }
             }
         }
+    }
 
-        Main.commitToParse.addAll(arraylistOfCommits);
-        Main.dateToParse.addAll(arraylistOfDate);
-        ParallelDownload(link, args);
+    public static void DeleteWrongDate() {
+        boolean lastDateOfMonth = true;
+        String dateWithoutTime = ":";
+        ArrayList<String> arraylistOfDateToIter = new ArrayList<>(SortedArrayOfDate);
+        Iterator<String> arraylistOfDateIter = arraylistOfDateToIter.iterator();
+        while (arraylistOfDateIter.hasNext()) {
+            String date = arraylistOfDateIter.next();
+            if (lastDateOfMonth) {
+                dateWithoutTime = date.substring(0, date.lastIndexOf("-"));
+                lastDateOfMonth = false;
+                continue;
+            }
+            if (date.contains(dateWithoutTime)) {
+                SortedArrayOfCommits.remove(SortedArrayOfDate.indexOf(date));
+                SortedArrayOfDate.remove(date);
+            } else {
+                dateWithoutTime = date.substring(0, date.lastIndexOf("-"));
+            }
+            arraylistOfDateIter.remove();
+        }
+    }
+
+    public static void DateSort() {
+        ArrayList<String> dateString = new ArrayList<>();
+        for (String element : arraylistOfDate) {
+            dateString.add(element);
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        dateString.sort(Comparator.comparing(s -> LocalDateTime.parse(s, formatter)));
+        while (dateString.size() != 0) {
+            int i = 0;
+            while (!arraylistOfDate.get(i).equals(dateString.get(0))) {
+                i++;
+            }
+            if (arraylistOfDate.get(i).equals(dateString.get(0))) {
+                SortedArrayOfCommits.add(arraylistOfCommits.get(i));
+                SortedArrayOfDate.add(arraylistOfDate.get(i));
+                dateString.remove(0);
+            }
+        }
     }
 
     public static void ParallelDownload(String link, String args) {
@@ -111,7 +173,7 @@ public class Connect {
 class ParallelParser implements Runnable {
     @Override
     public void run() {
-        while (true) {
+        while (!Connect.stop) {
             while (!Main.queueList.isEmpty()) {
                 Iterator<String> queueIter = Main.queueList.iterator();
                 Iterator<String> commitIter = Main.commitToParse.iterator();
@@ -147,6 +209,9 @@ class ParallelParser implements Runnable {
                         }
                     }
                 }
+            }
+            if (Main.queueList.isEmpty() && Connect.arraylistOfCommits.isEmpty()) {
+                Connect.stop = true;
             }
         }
     }

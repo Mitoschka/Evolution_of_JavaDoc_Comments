@@ -25,7 +25,7 @@ public class CheckForDownloadedData {
             return;
         } else {
             for (File f : listFiles) {
-                String result = f.getName().substring(f.getName().lastIndexOf("-") + 1, f.getName().indexOf('.'));
+                String result = f.getName().substring(f.getName().lastIndexOf("_") + 1, f.getName().indexOf('.'));
                 arrayOfDownloadedFiles.add(result);
             }
         }
