@@ -13,6 +13,7 @@ import java.util.*;
 public class Analyze {
 
     public static LinkedList<DocCommit> ArrayOfCommits = new LinkedList<>();
+    public static LinkedList<DocCommit> Test = new LinkedList<>();
     public static LinkedList<DocCommit> SortedArrayOfCommits = new LinkedList<>();
     public static DocCommit[] docCommits;
 
@@ -40,12 +41,6 @@ public class Analyze {
                     UnZip.UnZip(file);
                     file1 = new File(Path + "\\" + file.getName().replace(".zip", ""));
                     while (!isUnZip) {
-                        int count = 0;
-                        while (!file1.exists() && count < 200) {
-                            Thread.sleep(50);
-                            isUnZip = false;
-                            count++;
-                        }
                         while (firstSizeInBytes != secondSizeInBytes) {
                             firstSizeInBytes = file1.length();
                             Thread.sleep(50);
@@ -60,10 +55,9 @@ public class Analyze {
                     e.printStackTrace();
                 }
             });
-            DateSort();
+            //DateSort();
             AnalyzeElements();
         }
-
     }
 
     public static void AnalyzeFile(File file) {
@@ -86,7 +80,7 @@ public class Analyze {
         return new String(Files.readAllBytes(Paths.get(file)));
     }
 
-    public static void DateSort() {
+   /* public static void DateSort() {
         ArrayList<String> dateString = new ArrayList<>();
         for (DocCommit element : ArrayOfCommits) {
             dateString.add(element.DateTime);
@@ -103,10 +97,10 @@ public class Analyze {
                 dateString.remove(0);
             }
         }
-    }
+    }*/
 
     public static void AnalyzeElements() {
-        Iterator<DocCommit> docCommitIterator = SortedArrayOfCommits.iterator();
+        Iterator<DocCommit> docCommitIterator = ArrayOfCommits.iterator();
         while (docCommitIterator.hasNext()) {
             DocCommit docCommit = docCommitIterator.next();
             Iterator<JavaDocSegment> commitIterator = docCommit.DocSegments.iterator();
@@ -119,6 +113,7 @@ public class Analyze {
                     DocCommit ArrayOfCommitsSegments = new DocCommit(javaDocSegments, docCommit.Name, docCommit.DateTime);
                     ArrayList<DocCommit> docCommitArrayList = new ArrayList<>();
                     docCommitArrayList.add(ArrayOfCommitsSegments);
+                    Test.add(ArrayOfCommitsSegments);
                     if (!dictionary.containsKey(key)) {
                         dictionary.put(key, docCommitArrayList);
                     } else {
@@ -132,7 +127,7 @@ public class Analyze {
                 }
             }
             docCommitIterator.remove();
-            System.out.println("\nThere are still " + SortedArrayOfCommits.size() + " files left\n");
+            System.out.println("\nThere are still " + ArrayOfCommits.size() + " files left\n");
         }
         for (Map.Entry<List<String>, ArrayList<DocCommit>> evolution : dictionary.entrySet()) {
             if (evolution.getValue().size() > 1) {

@@ -1,13 +1,13 @@
 package com.company;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 public class CheckForDownloadedData {
 
     public static int countOfDownloadFile;
 
-    public static ArrayList<String> arrayOfDownloadedFiles = new ArrayList<>();
+    public static LinkedHashSet<String> arrayOfDownloadedFiles = new LinkedHashSet<>();
 
     public static void FindFiles(String ext) {
         if (!FolderCreate.temporaryFolder.exists()) {

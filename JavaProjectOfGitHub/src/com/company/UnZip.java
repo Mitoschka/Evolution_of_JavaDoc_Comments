@@ -34,9 +34,13 @@ public class UnZip {
                 .filter(entry -> !entry.isDirectory())
                 .forEach(entry -> UnzipFile(entry, out, args));
         zip.close();
-        nameOfFile = "\\" + nameOfFile.split("/")[0];
-        if (!Main.queueList.contains(nameOfFile)) {
-            Main.queueList.add(nameOfFile);
+        if (nameOfFile != null) {
+            Main.commitToParse.add(Connect.arraylistOfCommits.get(0));
+            Main.dateToParse.add(Connect.arraylistOfDate.get(0));
+            nameOfFile = "\\" + nameOfFile.split("/")[0];
+            if (!Main.queueList.contains(nameOfFile)) {
+                Main.queueList.add(nameOfFile);
+            }
         }
         System.out.println("Un zip complete : " + zip.getName() + "\n");
     }
@@ -70,7 +74,7 @@ public class UnZip {
 
     private static boolean CheckPath(ZipEntry entry, File out, String args) {
         if (!Connect.isSafe) {
-            String find = Connect.arraylistOfCommits.get(0);
+            String find = Connect.arraylistOfCommits.iterator().next();
             String fileName = "\\" + entry.getName().replace("/", "\\");
             String getFileName = fileName.substring(0, fileName.indexOf(find));
             String fileSafeName = out.getName().replace(".zip", "");

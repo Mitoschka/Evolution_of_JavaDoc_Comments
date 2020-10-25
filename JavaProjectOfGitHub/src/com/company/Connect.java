@@ -10,8 +10,8 @@ import java.util.*;
 public class Connect {
     public static List<String> arraylistOfCommits = new ArrayList<>();
     public static List<String> arraylistOfDate = new ArrayList<>();
-    public static List<String> SortedArrayOfDate = new LinkedList<>();
-    public static List<String> SortedArrayOfCommits = new LinkedList<>();
+    public static List<String> SortedArrayOfDate = new ArrayList<>();
+    public static List<String> SortedArrayOfCommits = new ArrayList<>();
 
     public static Thread thread;
     public static boolean stop = false;
@@ -24,12 +24,27 @@ public class Connect {
 
     private static int second = 0;
 
+    public static int sizeOfLink;
+    public static int sizeOfCommits;
+
     public static void Connect(String newString) throws Exception {
 
         HttpURLConnection httpURLConnection = (HttpURLConnection) (new URL(newString)).openConnection();
         String userCredentials = Main.User + ":" + Main.Password;
         String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
         httpURLConnection.setRequestProperty("Authorization", basicAuth);
+        if (!Main.getSizeOfLink) {
+            String sizeOfLinkHeaderField = httpURLConnection.getHeaderField("link");
+            String linkSize = sizeOfLinkHeaderField.substring(sizeOfLinkHeaderField.lastIndexOf("commits?page=") + 13, sizeOfLinkHeaderField.lastIndexOf("&per_page=100"));
+            sizeOfLink = Integer.parseInt(linkSize) - 1;
+            String urlForGetSize = newString.replace(newString.substring(newString.indexOf("&per_page=100"), newString.length()), "&per_page=1");
+            httpURLConnection = (HttpURLConnection) (new URL(urlForGetSize)).openConnection();
+            String sizeOfCommitsHeaderField = httpURLConnection.getHeaderField("link");
+            String commitSize = sizeOfCommitsHeaderField.substring(sizeOfLinkHeaderField.lastIndexOf("commits?page=") + 11, sizeOfLinkHeaderField.lastIndexOf("&per_page=1"));
+            sizeOfCommits = Integer.parseInt(commitSize) - 1;
+            Main.getSizeOfLink = true;
+            return;
+        }
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
         String line;
         String inputLine;
@@ -40,26 +55,24 @@ public class Connect {
         Arrays.stream(line.split("\\[\\{\"sha\":\""))
                 .skip(1L)
                 .map((L) -> L.split("\"")[0])
-                .forEach((L) -> {
+                .forEachOrdered((L) -> {
                     if (!isFirst) {
                         arraylistOfCommits.add(L);
                         isFirst = true;
                     }
                 });
+        isFirst = false;
         Arrays.stream(line.split("\\]\\},\\{\"sha\":\""))
                 .skip(1L)
                 .map((L) -> L.split("\"")[0])
-                .forEach((L) -> {
-                    if (!arraylistOfCommits.contains(L)) {
-                        arraylistOfCommits.add(L);
-                    }
+                .forEachOrdered((L) -> {
+                    arraylistOfCommits.add(L);
                 });
-        isFirst = false;
         second = 0;
         Arrays.stream(line.split("\"date\":\""))
                 .skip(1L)
                 .map((G) -> G.split("\"")[0])
-                .forEach((G) -> {
+                .forEachOrdered((G) -> {
                     String time = G.replace("T", " ").replace("Z", "");
                     if (second == 0) {
                         arraylistOfDate.add(time);
@@ -68,6 +81,7 @@ public class Connect {
                         second = 0;
                     }
                 });
+        Thread.sleep(50);
     }
 
     public static void Execution(String link, String args) {
@@ -84,8 +98,6 @@ public class Connect {
                 e.printStackTrace();
             }
         }
-        Main.commitToParse.addAll(arraylistOfCommits);
-        Main.dateToParse.addAll(arraylistOfDate);
         thread = new Thread(new ParallelParser());
         thread.start();
         ParallelDownload(link, args);
@@ -138,16 +150,10 @@ public class Connect {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         dateString.sort(Comparator.comparing(s -> LocalDateTime.parse(s, formatter)));
-        while (dateString.size() != 0) {
-            int i = 0;
-            while (!arraylistOfDate.get(i).equals(dateString.get(0))) {
-                i++;
-            }
-            if (arraylistOfDate.get(i).equals(dateString.get(0))) {
-                SortedArrayOfCommits.add(arraylistOfCommits.get(i));
-                SortedArrayOfDate.add(arraylistOfDate.get(i));
-                dateString.remove(0);
-            }
+        Collections.reverse(dateString);
+        for (String date : dateString) {
+            SortedArrayOfDate.add(date);
+            SortedArrayOfCommits.add(arraylistOfCommits.get(arraylistOfDate.indexOf(date)));
         }
     }
 
@@ -165,6 +171,7 @@ public class Connect {
                 Connect.isSafe = args.equals("\\");
                 Download.DownloadZipFileOfCommit(links, out, args);
                 downloadIter.remove();
+                arraylistOfDate.remove(0);
             }
         }
     }
