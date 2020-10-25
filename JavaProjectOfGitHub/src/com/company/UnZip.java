@@ -20,6 +20,7 @@ public class UnZip {
         if (!out.exists() || !out.canRead()) {
             System.out.println("File cannot be read");
         }
+        nameOfFile = null;
         zip = new ZipFile(out);
         entries = zip.entries();
         Queue<ZipEntry> arrayEntries = new ConcurrentLinkedQueue<>();
@@ -74,7 +75,7 @@ public class UnZip {
 
     private static boolean CheckPath(ZipEntry entry, File out, String args) {
         if (!Connect.isSafe) {
-            String find = Connect.arraylistOfCommits.iterator().next();
+            String find = out.getAbsolutePath().substring(out.getAbsolutePath().lastIndexOf("\\") + 1, out.getAbsolutePath().lastIndexOf(".zip"));
             String fileName = "\\" + entry.getName().replace("/", "\\");
             String getFileName = fileName.substring(0, fileName.indexOf(find));
             String fileSafeName = out.getName().replace(".zip", "");
