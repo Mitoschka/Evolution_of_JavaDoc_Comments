@@ -19,6 +19,6 @@ public class JavaDocSegment {
                 .replaceAll("\n", "")
                 .replaceAll(" {2}", "");
         this.Namespace = Namespace;
-        this.Location = Paths.get(Location).getFileName().toString();
+        this.Location = Paths.get(Location).toAbsolutePath().toString().substring(Paths.get(Location).toAbsolutePath().toString().indexOf(Main.secondArgument) + 1);
     }
 }

@@ -2,6 +2,8 @@ package com.company;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -10,11 +12,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
+
 public class Analyze {
 
     public static LinkedList<DocCommit> ArrayOfCommits = new LinkedList<>();
     public static LinkedList<DocCommit> Test = new LinkedList<>();
     public static LinkedList<DocCommit> SortedArrayOfCommits = new LinkedList<>();
+
+    public static LinkedList<String> UniqueContent = new LinkedList<>();
+
     public static DocCommit[] docCommits;
 
     public static Map<List<String>, ArrayList<DocCommit>> dictionary = new LinkedHashMap<>();
@@ -117,8 +124,78 @@ public class Analyze {
                     if (!dictionary.containsKey(key)) {
                         dictionary.put(key, docCommitArrayList);
                     } else {
-                        if (!dictionary.get(key).get(dictionary.get(key).size() - 1).DocSegments.get(0).Content.equals(commit.Content)) {
-                            dictionary.get(key).add((dictionary.get(key).size()), ArrayOfCommitsSegments);
+                        if (!dictionary.get(key).get(dictionary.get(key).size() - 1).DocSegments.get(dictionary.get(key).get(dictionary.get(key).size() - 1).DocSegments.size() - 1).Content.equals(commit.Content) && !dictionary.get(key).get(dictionary.get(key).size() - 1).Name.equals(ArrayOfCommitsSegments.Name)) {
+                            String dictionaryContent = dictionary.get(key).get(dictionary.get(key).size() - 1).DocSegments.get(dictionary.get(key).get(dictionary.get(key).size() - 1).DocSegments.size() - 1).Content;
+                            UniqueContent = new LinkedList<>();
+                            for (DocCommit item : dictionary.get(key)) {
+                                UniqueContent.add(item.DocSegments.get(0).Content);
+                            }
+                            if (UniqueContent.size() != 0) {
+                                dictionaryContent = UniqueContent.getLast().replace("{{", "").replace("}}", "");
+                            }
+                            if (dictionaryContent == commit.Content) {
+                                continue;
+                            }
+                            String[] firstString = dictionaryContent.toLowerCase().replaceAll("  ", " ").split(" ");
+                            String[] secondString = commit.Content.toLowerCase().replaceAll("  ", " ").split(" ");
+                            String firstStringWithoutSpace = dictionaryContent.toLowerCase().replaceAll(" ", "");
+                            String secondStringWithoutSpace = commit.Content.toLowerCase().replaceAll(" ", "");
+                            if (firstStringWithoutSpace.equals(secondStringWithoutSpace)) {
+                                continue;
+                            }
+                            ArrayList<String> firstStringTemp = new ArrayList<>();
+                            for (String item : firstString) {
+                                if (!item.equals("")) {
+                                    firstStringTemp.add(item);
+                                }
+                            }
+                            ArrayList<String> secondStringTemp = new ArrayList<>();
+                            for (String item : secondString) {
+                                if (!item.equals("")) {
+                                    secondStringTemp.add(item);
+                                }
+                            }
+                            if (firstStringTemp.equals(secondStringTemp)) {
+                                continue;
+                            }
+                            firstString = firstStringTemp.toArray(new String[0]);
+                            secondString = secondStringTemp.toArray(new String[0]);
+                            int FirstOfDifference = 0;
+                            while (firstString.length > FirstOfDifference && secondString.length > FirstOfDifference) {
+                                if (firstString[FirstOfDifference].equals(secondString[FirstOfDifference])) {
+                                    FirstOfDifference++;
+                                } else {
+                                    break;
+                                }
+                            }
+                            ArrayUtils.reverse(firstString);
+                            ArrayUtils.reverse(secondString);
+                            int LastOfDifference = 0;
+                            while (firstString.length > LastOfDifference && secondString.length > LastOfDifference) {
+                                if (firstString[LastOfDifference].equals(secondString[LastOfDifference])) {
+                                    LastOfDifference++;
+                                } else {
+                                    break;
+                                }
+                            }
+                            ArrayUtils.reverse(firstString);
+                            ArrayUtils.reverse(secondString);
+                            LastOfDifference = secondString.length - LastOfDifference;
+                            ArrayList<String> resultOfStrings = new ArrayList<>();
+                            for (int i = 0; i < secondString.length; i++) {
+                                resultOfStrings.add(secondString[i]);
+                            }
+                            UniqueContent.add(String.join(" ", resultOfStrings));
+                            resultOfStrings.add(LastOfDifference, "}}");
+                            resultOfStrings.add(FirstOfDifference, "{{");
+                            JavaDocSegment commitToDictionary = new JavaDocSegment(commit.Content, commit.Signature, commit.Namespace, commit.Location);
+                            ArrayList<JavaDocSegment> javaDocSegmentsToDictionary = new ArrayList<>();
+                            javaDocSegmentsToDictionary.add(commitToDictionary);
+                            DocCommit ArrayOfCommitsSegmentsToDictionary = new DocCommit(javaDocSegmentsToDictionary, docCommit.Name, docCommit.DateTime);
+                            ArrayOfCommitsSegmentsToDictionary.DocSegments.get(0).Content = String.join(" ", resultOfStrings);
+                            dictionary.get(key).add((dictionary.get(key).size()), ArrayOfCommitsSegmentsToDictionary);
+                        } else {
+                            continue;
                         }
                     }
                     commitIterator.remove();

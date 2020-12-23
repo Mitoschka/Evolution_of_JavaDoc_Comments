@@ -3,6 +3,7 @@ package com.company;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -31,15 +32,15 @@ public class Connect {
 
         HttpURLConnection httpURLConnection = (HttpURLConnection) (new URL(newString)).openConnection();
         String userCredentials = Main.User + ":" + Main.Password;
-        String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
-        httpURLConnection.setRequestProperty("Authorization", basicAuth);
+        String basicAuth = Base64.getEncoder().encodeToString((userCredentials).getBytes(StandardCharsets.UTF_8));
+        httpURLConnection.setRequestProperty("Authorization", "Basic " + basicAuth);
         if (!Main.getSizeOfLink) {
-            String sizeOfLinkHeaderField = httpURLConnection.getHeaderField("link");
+            String sizeOfLinkHeaderField = httpURLConnection.getHeaderField("Link");
             String linkSize = sizeOfLinkHeaderField.substring(sizeOfLinkHeaderField.lastIndexOf("commits?page=") + 13, sizeOfLinkHeaderField.lastIndexOf("&per_page=100"));
             sizeOfLink = Integer.parseInt(linkSize) - 1;
             String urlForGetSize = newString.replace(newString.substring(newString.indexOf("&per_page=100"), newString.length()), "&per_page=1");
             httpURLConnection = (HttpURLConnection) (new URL(urlForGetSize)).openConnection();
-            String sizeOfCommitsHeaderField = httpURLConnection.getHeaderField("link");
+            String sizeOfCommitsHeaderField = httpURLConnection.getHeaderField("Link");
             String commitSize = sizeOfCommitsHeaderField.substring(sizeOfLinkHeaderField.lastIndexOf("commits?page=") + 11, sizeOfLinkHeaderField.lastIndexOf("&per_page=1"));
             sizeOfCommits = Integer.parseInt(commitSize) - 1;
             Main.getSizeOfLink = true;
@@ -205,9 +206,6 @@ class ParallelParser implements Runnable {
                         queueIter.remove();
                         commitIter.remove();
                         dateIter.remove();
-                        Main.queueList.remove();
-                        Main.commitToParse.remove();
-                        Main.dateToParse.remove();
                     } catch (Exception e) {
                         try {
                             Thread.sleep(100);

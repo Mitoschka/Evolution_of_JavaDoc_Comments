@@ -18,13 +18,15 @@ public class Main {
     public static Queue<String> dateToParse;
     public static boolean withConnecting;
 
+    public static String secondArgument;
+
     private static long start;
     private static long end;
 
     public static boolean getSizeOfLink = false;
 
     public static void main(String[] args) throws Exception {
-
+        secondArgument = args[1];
         start = System.currentTimeMillis();
         new FolderCreate();
         System.out.print("Input URL of GitHub: ");

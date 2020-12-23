@@ -1,6 +1,7 @@
 package com.company;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class MainOfAnalyze {
     static final Pattern JavaDocPattern = Pattern.compile("(?s)package\\s*(.*?);|(/\\*\\*(?s:(?!\\*/).)*\\*/)(.*?)[;\\{]");
 
     public static void PrintDocsReport(ArrayList<DocCommit> comments, String args) {
-        Gson json = new Gson();
+        Gson json = new GsonBuilder().setPrettyPrinting().create();
         try (PrintWriter outJson = new PrintWriter(FolderCreate.folder + args + ".json")) {
             nameOfOutJson = FolderCreate.folder + args + ".json";
             String response = json.toJson(comments);
@@ -59,7 +60,6 @@ public class MainOfAnalyze {
             return;
         }
     }
-
 
     public static void ParseJavadoc(String block, String signature, String namespace, String path, Queue<JavaDocSegment> JavaDocSegments) throws IOException {
         if (block.contains("{@inheritDoc}")) return;
@@ -98,7 +98,6 @@ public class MainOfAnalyze {
         }
 
     }
-
 
     public static void ParseFile(File file, Queue<JavaDocSegment> JavaDocSegments) throws IOException {
         if (file.getAbsolutePath().contains(".java")) {
