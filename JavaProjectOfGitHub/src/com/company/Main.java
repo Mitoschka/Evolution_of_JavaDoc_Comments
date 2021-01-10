@@ -9,6 +9,7 @@ public class Main {
     public static String pathToDisk = "D:\\";
     public static String pathToTemporaryDisk = "C:\\";
     public static String folderName = "JSON Folder";
+    public static String personalToken;
 
     public static String User;
     public static String Password;
@@ -27,6 +28,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         secondArgument = args[1];
+        personalToken = args[2];
         start = System.currentTimeMillis();
         new FolderCreate();
         System.out.print("Input URL of GitHub: ");
@@ -72,10 +74,10 @@ public class Main {
     public static void startWithConnecting(String[] args, String link, String ext) throws IOException {
         CheckForDownloadedData.FindFiles(ext);
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("\nUser: ");
-        User = reader.readLine();
-        System.out.print("\nPassword: ");
-        Password = reader.readLine();
+        //System.out.print("\nUser: ");
+        //User = reader.readLine();
+        //System.out.print("\nPassword: ");
+        //Password = reader.readLine();
         System.out.print("\nPlease wait, connecting... \n");
         int count = 0;
         String url = link.replace("https://github.com/", "https://api.github.com/repos/");

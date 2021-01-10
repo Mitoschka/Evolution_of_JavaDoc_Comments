@@ -3,7 +3,6 @@ package com.company;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -29,11 +28,13 @@ public class Connect {
     public static int sizeOfCommits;
 
     public static void Connect(String newString) throws Exception {
-
         HttpURLConnection httpURLConnection = (HttpURLConnection) (new URL(newString)).openConnection();
-        String userCredentials = Main.User + ":" + Main.Password;
-        String basicAuth = Base64.getEncoder().encodeToString((userCredentials).getBytes(StandardCharsets.UTF_8));
-        httpURLConnection.setRequestProperty("Authorization", "Basic " + basicAuth);
+        httpURLConnection.setRequestProperty("Authorization", "token " + Main.personalToken);
+        /*Map<String, List<String>> map = httpURLConnection.getHeaderFields();
+        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+            System.out.println("Key : " + entry.getKey() +
+                    " ,Value : " + entry.getValue());
+        }*/
         if (!Main.getSizeOfLink) {
             String sizeOfLinkHeaderField = httpURLConnection.getHeaderField("Link");
             String linkSize = sizeOfLinkHeaderField.substring(sizeOfLinkHeaderField.lastIndexOf("commits?page=") + 13, sizeOfLinkHeaderField.lastIndexOf("&per_page=100"));
