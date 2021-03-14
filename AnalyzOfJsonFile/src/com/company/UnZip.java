@@ -7,7 +7,9 @@ import java.util.zip.ZipFile;
 
 public class UnZip {
 
-    public static void UnZip(File out) {
+    public  static String name;
+
+    public static String UnZip(File out) {
 
         if (!out.exists() || !out.canRead()) {
             System.out.println("File cannot be read");
@@ -25,11 +27,13 @@ public class UnZip {
                                     new File(out.getParent(), entry.getName()))));
                 }
                 System.out.println("Un zip complete : " + entry.getName() + "\n");
+                name = entry.getName();
             }
             zip.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return name;
     }
 
     private static void write(InputStream in, OutputStream out) throws IOException {

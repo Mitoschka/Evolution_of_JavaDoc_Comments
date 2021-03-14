@@ -31,6 +31,8 @@ public class Analyze {
     public static Boolean isUnZip = false;
     public static File file1;
 
+    private static Boolean isLastCommit = false;
+
     public static long firstSizeInBytes = -1;
     public static long secondSizeInBytes = -3;
 
@@ -42,11 +44,17 @@ public class Analyze {
             LinkedList<File> files = new LinkedList<>();
             new com.company.DirExplorer((level, fpath, file) -> fpath.endsWith(".zip"), (level, fpath, file) -> files.add(file)).explore(path);
 
+            File lastCommit = files.getLast();
+
             files.parallelStream().forEachOrdered(file -> {
                 try {
+                    if (file.equals(lastCommit))
+                    {
+                        isLastCommit = true;
+                    }
                     isUnZip = false;
                     UnZip.UnZip(file);
-                    file1 = new File(Path + "\\" + file.getName().replace(".zip", ""));
+                    file1 = new File("D:\\JSON Folder\\" + UnZip.UnZip(file));
                     while (!isUnZip) {
                         while (firstSizeInBytes != secondSizeInBytes) {
                             firstSizeInBytes = file1.length();
@@ -57,7 +65,6 @@ public class Analyze {
                         AnalyzeFile(file1);
                         isUnZip = true;
                     }
-                    file.delete();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -79,7 +86,9 @@ public class Analyze {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            file1.delete();
+            if (!isLastCommit) {
+                file1.delete();
+            }
         }
     }
 
@@ -188,7 +197,7 @@ public class Analyze {
                             UniqueContent.add(String.join(" ", resultOfStrings));
                             resultOfStrings.add(LastOfDifference, "}}");
                             resultOfStrings.add(FirstOfDifference, "{{");
-                            JavaDocSegment commitToDictionary = new JavaDocSegment(commit.Content, commit.Signature, commit.Namespace, commit.Location);
+                            JavaDocSegment commitToDictionary = new JavaDocSegment(commit.Content, commit.NGrams, commit.Range, commit.Signature, commit.Namespace, commit.Location);
                             ArrayList<JavaDocSegment> javaDocSegmentsToDictionary = new ArrayList<>();
                             javaDocSegmentsToDictionary.add(commitToDictionary);
                             DocCommit ArrayOfCommitsSegmentsToDictionary = new DocCommit(javaDocSegmentsToDictionary, docCommit.Name, docCommit.DateTime);
