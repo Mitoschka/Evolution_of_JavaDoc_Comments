@@ -222,6 +222,6 @@ public class Analyze {
                 dictionaryToLog.put(key, value);
             }
         }
-        dictionary.clear();
+        //dictionary.clear();
     }
 }
