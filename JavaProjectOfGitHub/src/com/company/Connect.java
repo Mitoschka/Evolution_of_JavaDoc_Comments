@@ -171,9 +171,23 @@ public class Connect {
                 out = new File(FolderCreate.temporaryFolder + "\\" + commitToDownload + ".zip");
                 out.deleteOnExit();
                 Connect.isSafe = args.equals("\\");
-                Download.DownloadZipFileOfCommit(links, out, args);
-                downloadIter.remove();
-                arraylistOfDate.remove(0);
+                String test = out.getAbsolutePath();
+                if (test.equals("C:\\JSON Folder\\ac402e6da4d2bf63dacbb308de8de095e06c7feb.zip"))
+                {
+                    try {
+                        UnZip.UnZip(out, args);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    while (out.exists()) {
+                        out.delete();
+                    }
+                }
+                else {
+                    Download.DownloadZipFileOfCommit(links, out, args);
+                    downloadIter.remove();
+                    arraylistOfDate.remove(0);
+                }
             }
         }
     }
@@ -222,4 +236,3 @@ class ParallelParser implements Runnable {
         }
     }
 }
-

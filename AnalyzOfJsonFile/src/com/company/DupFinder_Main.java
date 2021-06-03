@@ -41,13 +41,14 @@ public class DupFinder_Main {
     public static DocCommit[] docCommits;
 
     public static ArrayList<HashSet<JavaDocSegment>> ListOfAllGroups = new ArrayList<>();
-    public static ArrayList ResultForLogListOfAllGroups = new ArrayList<>();
 
-    public static HashSet<JavaDocSegment> ALLHashSetListOfListOfAllGroups = new HashSet<>();
-    public static HashSet<JavaDocSegment> HashSetListOfListOfAllGroups = new HashSet<>();
+    public static ArrayList<ArrayList<DocCommit>> ListOfGroup = new ArrayList<>();
 
     public static ArrayList<ArrayList<ArrayList<DocCommit>>> Result = new ArrayList<>();
     public static ArrayList<DocCommit> TestResult = new ArrayList<>();
+
+
+    public static String args = "D:\\JSON Folder";
 
     public static void Initialize(String[] args) {
 
@@ -155,16 +156,10 @@ public class DupFinder_Main {
     }
 
     public static void PrintDupsReport(ArrayList<HashSet<JavaDocSegment>> groups) {
-        // Копирую всю группу в новый список (метод глубокого копирования)
-        for (HashSet<JavaDocSegment> elements : groups) {
-            ListOfAllGroups.add((HashSet<JavaDocSegment>) elements.clone());
-        }
-        // Это группы
         for (HashSet<JavaDocSegment> group : groups) {
-            ArrayList<ArrayList<DocCommit>> ListOfGroup = new ArrayList<>();
+            ListOfGroup = new ArrayList<>();
             while (group.iterator().hasNext()) {
                 Iterator<JavaDocSegment> commitIterator = group.iterator();
-                // Это элемент группы
                 while (commitIterator.hasNext()) {
                     JavaDocSegment commit = commitIterator.next();
                     List<String> key = Arrays.asList(commit.Signature, commit.Namespace, commit.Location);
@@ -174,79 +169,23 @@ public class DupFinder_Main {
                     }
                     commitIterator.remove();
                 }
-                String TempName = null;
-                String TempDateTime = null;
-                for (ArrayList<DocCommit> commit : ListOfGroup) {
-                    if (TempDateTime == null && TempName == null) {
-                        TempName = commit.get(0).Name;
-                        TempDateTime = commit.get(0).DateTime;
-                    } else {
-                        if (commit.get(0).Name.equals(TempName) && commit.get(0).DateTime.equals(TempDateTime)) {
-                            ListOfGroup.clear();
-                            break;
-                        }
-                    }
+            }
+            String CurrentNameOfEvolution = " ";
+            int CurrentSizeOfEvolution = 0;
+            for (ArrayList<DocCommit> ElementOfGroup : ListOfGroup) {
+                if (CurrentSizeOfEvolution == 0)
+                {
+                    CurrentSizeOfEvolution = ElementOfGroup.size();
+                    CurrentNameOfEvolution = ElementOfGroup.get(0).Name;
+                    continue;
                 }
-                if (ListOfGroup.size() == 1) {
-                    if (!Result.contains(ListOfGroup)) {
-                        Result.add(ListOfGroup);
-                    }
+                if (CurrentSizeOfEvolution != ElementOfGroup.size() && CurrentNameOfEvolution.equals(ElementOfGroup.get(0).Name))
+                {
+                    Result.add(ListOfGroup);
+                    break;
                 }
-                if (ListOfGroup.size() > 1) {
-                    boolean isAdd = false;
-                    int simmilarSize = 0;
-                    for (ArrayList<DocCommit> commitOfGroup : ListOfGroup) {
-                        if (simmilarSize == 0) {
-                            simmilarSize = commitOfGroup.size();
-                        }
-                        if (commitOfGroup.size() != simmilarSize) {
-                            Result.add(ListOfGroup);
-                            isAdd = true;
-                            break;
-                        }
-                    }
-                    boolean isEqual = false;
-                    if (!isAdd & simmilarSize > 0) {
-                        for (int i = 0; i + 1 < ListOfGroup.size(); i++) {
-                            for (int g = 0; g < ListOfGroup.get(i).size(); g++) {
-                                isEqual = ListOfGroup.get(i).get(g).DocSegments.get(0).Content.equals(ListOfGroup.get(i + 1).get(g).DocSegments.get(0).Content);
-                                if (!isEqual) {
-                                    if (!Result.contains(ListOfGroup)) {
-                                        Result.add(ListOfGroup);
-                                        TestResult.add(ListOfGroup.get(i).get(g));
-                                        TestResult.add(ListOfGroup.get(i + 1).get(g));
-                                        for (HashSet<JavaDocSegment> HashSetOfListOfAllGroups : ListOfAllGroups) {
-                                            if (!HashSetListOfListOfAllGroups.isEmpty()) {
-                                                ResultForLogListOfAllGroups.add(HashSetListOfListOfAllGroups);
-                                            }
-                                            HashSetListOfListOfAllGroups = new HashSet<>();
-                                            for (JavaDocSegment ElementOfHashSetOfListOfAllGroups : HashSetOfListOfAllGroups) {
-                                                for (ArrayList<DocCommit> ArrayListOfListOfGroup : ListOfGroup) {
-                                                    for (DocCommit ArrayListOfArrayListOfListOfGroup : ArrayListOfListOfGroup) {
-                                                        if (ElementOfHashSetOfListOfAllGroups.Namespace.equals(ArrayListOfArrayListOfListOfGroup.DocSegments.get(0).Namespace)
-                                                                && (ElementOfHashSetOfListOfAllGroups.Signature.equals(ArrayListOfArrayListOfListOfGroup.DocSegments.get(0).Signature)
-                                                                && (ElementOfHashSetOfListOfAllGroups.Location.equals(ArrayListOfArrayListOfListOfGroup.DocSegments.get(0).Location)))) {
-                                                            if (!ALLHashSetListOfListOfAllGroups.contains(ArrayListOfArrayListOfListOfGroup.DocSegments.get(0))) {
-                                                                ALLHashSetListOfListOfAllGroups.add(ArrayListOfArrayListOfListOfGroup.DocSegments.get(0));
-                                                                HashSetListOfListOfAllGroups.add(ArrayListOfArrayListOfListOfGroup.DocSegments.get(0));
-                                                            }
-                                                        } else {
-                                                            if (!ALLHashSetListOfListOfAllGroups.contains(ElementOfHashSetOfListOfAllGroups)) {
-                                                                ALLHashSetListOfListOfAllGroups.add(ElementOfHashSetOfListOfAllGroups);
-                                                                HashSetListOfListOfAllGroups.add(ElementOfHashSetOfListOfAllGroups);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+            }
+        }
                 /*
                 int simmilarSize = 0;
                 boolean isSizeSimmilar = true;
@@ -277,9 +216,6 @@ public class DupFinder_Main {
                         }
                     }
                 }*/
-            }
-        }
-
     }
 
     public static void main(String[] args) {

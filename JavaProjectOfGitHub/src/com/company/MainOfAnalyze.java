@@ -61,14 +61,14 @@ public class MainOfAnalyze {
         }
     }
 
-    public static void ParseJavadoc(String block, String signature, String namespace, String path, Queue<JavaDocSegment> JavaDocSegments) throws IOException {
+    public static void ParseJavadoc(String block, String range, String signature, String namespace, String path, Queue<JavaDocSegment> JavaDocSegments) throws IOException {
         if (block.contains("{@inheritDoc}")) return;
         if (signature.contains("package")) return;
 
         if (signature != null && block.length() > 0) {
             ArrayList<String> sents = Ngrams.sanitiseToWords(block);
             if (sents.size() >= MinCommentSize) {
-                JavaDocSegments.add(new JavaDocSegment(block, signature, namespace, path));
+                JavaDocSegments.add(new JavaDocSegment(block, sents, range, signature, namespace, path, JavaDocSegments.size()));
             }
         }
     }
@@ -110,7 +110,7 @@ public class MainOfAnalyze {
                     if (matcher.group(matcher.groupCount()) == null)
                         namespace = matcher.group(1);
                     else {
-                        ParseJavadoc(matcher.group(2).intern(), matcher.group(matcher.groupCount()), namespace, file.getAbsolutePath(), JavaDocSegments);
+                        ParseJavadoc(matcher.group(2).intern(), matcher.start() + "-" + matcher.end(), matcher.group(matcher.groupCount()), namespace, file.getAbsolutePath(), JavaDocSegments);
                     }
                 }
             } catch (Exception e) {

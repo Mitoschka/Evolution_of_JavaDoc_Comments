@@ -11,8 +11,8 @@ public class Main {
     public static String folderName = "JSON Folder";
     public static String personalToken;
 
-    public static String User;
-    public static String Password;
+    //public static String User;
+    //public static String Password;
 
     public static Queue<String> queueList;
     public static Queue<String> commitToParse;
