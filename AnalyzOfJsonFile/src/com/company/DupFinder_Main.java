@@ -162,6 +162,12 @@ public class DupFinder_Main {
                 Iterator<JavaDocSegment> commitIterator = group.iterator();
                 while (commitIterator.hasNext()) {
                     JavaDocSegment commit = commitIterator.next();
+                    if (commit.Location.contains("JSON Folder")) {
+                        String find = "\\";
+                        for (int i = 0; i < 2; i++) {
+                            commit.Location = commit.Location.substring(commit.Location.indexOf(find) + 1);
+                        }
+                    }
                     List<String> key = Arrays.asList(commit.Signature, commit.Namespace, commit.Location);
                     ArrayList<DocCommit> commitOfGroup = Analyze.dictionary.get(key);
                     if (commitOfGroup != null) {
@@ -173,14 +179,12 @@ public class DupFinder_Main {
             String CurrentNameOfEvolution = " ";
             int CurrentSizeOfEvolution = 0;
             for (ArrayList<DocCommit> ElementOfGroup : ListOfGroup) {
-                if (CurrentSizeOfEvolution == 0)
-                {
+                if (CurrentSizeOfEvolution == 0) {
                     CurrentSizeOfEvolution = ElementOfGroup.size();
                     CurrentNameOfEvolution = ElementOfGroup.get(0).Name;
                     continue;
                 }
-                if (CurrentSizeOfEvolution != ElementOfGroup.size() && CurrentNameOfEvolution.equals(ElementOfGroup.get(0).Name))
-                {
+                if (CurrentSizeOfEvolution != ElementOfGroup.size() && CurrentNameOfEvolution.equals(ElementOfGroup.get(0).Name)) {
                     Result.add(ListOfGroup);
                     break;
                 }

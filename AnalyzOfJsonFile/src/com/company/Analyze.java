@@ -48,8 +48,7 @@ public class Analyze {
 
             files.parallelStream().forEachOrdered(file -> {
                 try {
-                    if (file.equals(lastCommit))
-                    {
+                    if (file.equals(lastCommit)) {
                         isLastCommit = true;
                     }
                     isUnZip = false;
@@ -123,6 +122,12 @@ public class Analyze {
             while (commitIterator.hasNext()) {
                 try {
                     JavaDocSegment commit = commitIterator.next();
+                    if (commit.Location.contains("JSON Folder")) {
+                        String find = "\\";
+                        for (int i = 0; i < 2; i++) {
+                            commit.Location = commit.Location.substring(commit.Location.indexOf(find) + 1);
+                        }
+                    }
                     List<String> key = Arrays.asList(commit.Signature, commit.Namespace, commit.Location);
                     ArrayList<JavaDocSegment> javaDocSegments = new ArrayList<>();
                     javaDocSegments.add(commit);
