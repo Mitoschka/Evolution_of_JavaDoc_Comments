@@ -42,9 +42,12 @@ public class DupFinder_Main {
 
     public static ArrayList<HashSet<JavaDocSegment>> ListOfAllGroups = new ArrayList<>();
 
-    public static ArrayList<ArrayList<DocCommit>> ListOfGroup = new ArrayList<>();
+    public static ArrayList<ArrayList<DocCommit>> ListOfOtherGroup = new ArrayList<>();
+    public static ArrayList<ArrayList<DocCommit>> ListOfTypos = new ArrayList<>();
 
-    public static ArrayList<ArrayList<ArrayList<DocCommit>>> Result = new ArrayList<>();
+    public static ArrayList<ArrayList<ArrayList<DocCommit>>> ResultOfOtherGroup = new ArrayList<>();
+    public static ArrayList<ArrayList<ArrayList<DocCommit>>> ResultOfTypos = new ArrayList<>();
+
     public static ArrayList<DocCommit> TestResult = new ArrayList<>();
 
 
@@ -157,7 +160,8 @@ public class DupFinder_Main {
 
     public static void PrintDupsReport(ArrayList<HashSet<JavaDocSegment>> groups) {
         for (HashSet<JavaDocSegment> group : groups) {
-            ListOfGroup = new ArrayList<>();
+            ListOfOtherGroup = new ArrayList<>();
+            ListOfTypos = new ArrayList<>();
             while (group.iterator().hasNext()) {
                 Iterator<JavaDocSegment> commitIterator = group.iterator();
                 while (commitIterator.hasNext()) {
@@ -169,25 +173,35 @@ public class DupFinder_Main {
                         }
                     }
                     List<String> key = Arrays.asList(commit.Signature, commit.Namespace, commit.Location);
-                    ArrayList<DocCommit> commitOfGroup = Analyze.dictionary.get(key);
-                    if (commitOfGroup != null) {
-                        ListOfGroup.add(commitOfGroup);
+                    ArrayList<DocCommit> commitOfOtherGroup = Analyze.dictionary.get(key);
+                    ArrayList<DocCommit> commitOfTypos = Analyze.listOfTyposToLog.get(key);
+                    if (commitOfOtherGroup != null) {
+                        ListOfOtherGroup.add(commitOfOtherGroup);
+                    }
+                    if (commitOfTypos != null) {
+                        ListOfTypos.add(commitOfTypos);
                     }
                     commitIterator.remove();
                 }
             }
             String CurrentNameOfEvolution = " ";
             int CurrentSizeOfEvolution = 0;
-            for (ArrayList<DocCommit> ElementOfGroup : ListOfGroup) {
+            for (ArrayList<DocCommit> ElementOfGroup : ListOfOtherGroup) {
                 if (CurrentSizeOfEvolution == 0) {
                     CurrentSizeOfEvolution = ElementOfGroup.size();
                     CurrentNameOfEvolution = ElementOfGroup.get(0).Name;
                     continue;
                 }
-                if (CurrentSizeOfEvolution != ElementOfGroup.size() && CurrentNameOfEvolution.equals(ElementOfGroup.get(0).Name)) {
-                    Result.add(ListOfGroup);
+                if (CurrentSizeOfEvolution != ElementOfGroup.size()
+                        && CurrentNameOfEvolution.equals(ElementOfGroup.get(0).Name)) {
+                    ResultOfOtherGroup.add(ListOfOtherGroup);
                     break;
                 }
+            }
+
+            //Записываю не пустые списки в отчёт, у которых есть эволюция
+            if (ListOfTypos.size() > 1) {
+                ResultOfTypos.add(ListOfTypos);
             }
         }
                 /*

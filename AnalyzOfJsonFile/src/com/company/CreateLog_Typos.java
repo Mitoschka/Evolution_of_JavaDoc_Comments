@@ -1,13 +1,15 @@
 package com.company;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class CreateLog {
+public class CreateLog_Typos {
 
-    public static void CreateLogFile(String args) {
+    public static void CreateLogFile_Typos(String args) {
         StringBuilder sb = new StringBuilder();
-        DupFinder_Main.ListOfAllGroups.forEach(segment -> {
+        DupFinder_Main.ListOfTypos.forEach(segment -> {
             sb.append(segment.toString());
         });
 
@@ -17,10 +19,10 @@ public class CreateLog {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        try (FileWriter writer = new FileWriter(args + "/Log.txt", false)) {
-            writer.write("\t\tFound " + DupFinder_Main.ResultOfOtherGroup.size() + " API elements with modified comments.\n\n\n");
+        try (FileWriter writer = new FileWriter(args + "/Typos.txt", false)) {
+            writer.write("\t\tFound " + DupFinder_Main.ResultOfTypos.size() + " API elements with modified comments.\n\n\n");
             int i = 1;
-            for (ArrayList<ArrayList<DocCommit>> evolution : DupFinder_Main.ResultOfOtherGroup) {
+            for (ArrayList<ArrayList<DocCommit>> evolution : DupFinder_Main.ResultOfTypos) {
                 writer.write(i + " API element" + "  {\n");
                 int j = 1;
                 for (ArrayList<DocCommit> evolutionOfElement : evolution) {

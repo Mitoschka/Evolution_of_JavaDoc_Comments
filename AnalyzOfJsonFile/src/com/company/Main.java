@@ -15,6 +15,7 @@ public class Main {
         analyze.AnalyzeDirectory(args[0]);
         DupFinder_Main.main(args);
         CreateLog.CreateLogFile(args[0]);
+        CreateLog_Typos.CreateLogFile_Typos(args[0]);
         long end = System.currentTimeMillis();
         System.out.println("Finished parsing " + (end - start) / 1000);
     }
